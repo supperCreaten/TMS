@@ -1,0 +1,3 @@
+-- 用户管理相关：sys_user 已包含 dept_id / post_id（insert 已使用）。
+-- 若后续需要持久化备注，可执行：
+-- ALTER TABLE sys_user ADD COLUMN remark VARCHAR(500) NULL COMMENT '备注';

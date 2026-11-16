@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tms.system.mapper.TmsOrderCargoMapper">
+
+	<resultMap type="com.tms.system.domain.vo.TmsOrderCargoVo" id="TmsOrderCargoVoResult">
+		<id     property="cargoId"    column="cargo_id"    />
+		<result property="orderId"    column="order_id"    />
+		<result property="sortNum"    column="sort_num"    />
+		<result property="cargoName"  column="cargo_name"  />
+		<result property="quantity"   column="quantity"    />
+		<result property="unit"       column="unit"        />
+		<result property="volume"     column="volume"      />
+		<result property="weight"     column="weight"      />
+		<result property="remark"     column="remark"      />
+	</resultMap>
+
+	<sql id="selectCargoVo">
+		select cargo_id, order_id, sort_num, cargo_name, quantity, unit, volume, weight, remark
+		from tms_order_cargo
+	</sql>
+
+	<select id="selectCargoListByOrderId" parameterType="Long" resultMap="TmsOrderCargoVoResult">
+		<include refid="selectCargoVo"/>
+		where order_id = #{orderId} and is_del = '0'
+		order by sort_num asc, cargo_id asc
+	</select>
+
+	<insert id="insertCargo" parameterType="com.tms.system.domain.TmsOrderCargo" useGeneratedKeys="true" keyProperty="cargoId">
+		insert into tms_order_cargo(
+			order_id,
+			<if test="sortNum != null">sort_num,</if>
+			<if test="cargoName != null and cargoName != ''">cargo_name,</if>
+			quantity, unit,
+			<if test="volume != null">volume,</if>
+			weight,
+			<if test="remark != null and remark != ''">remark,</if>
+			is_del, create_by, update_by, create_time, update_time
+		)values(
+			#{orderId},
+			<if test="sortNum != null">#{sortNum},</if>
+			<if test="cargoName != null and cargoName != ''">#{cargoName},</if>
+			#{quantity}, #{unit},
+			<if test="volume != null">#{volume},</if>
+			#{weight},
+			<if test="remark != null and remark != ''">#{remark},</if>
+			'0', #{createBy}, #{updateBy}, sysdate(), sysdate()
+		)
+	</insert>
+
+	<insert id="batchInsertCargo" parameterType="java.util.List">
+		insert into tms_order_cargo(
+			order_id, sort_num, cargo_name, quantity, unit, volume, weight, remark,
+			is_del, create_by, update_by, create_time, update_time
+		) values
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.orderId},
+				#{item.sortNum},
+				#{item.cargoName},
+				#{item.quantity},
+				#{item.unit},
+				#{item.volume},
+				#{item.weight},
+				#{item.remark},
+				'0',
+				#{item.createBy},
+				#{item.updateBy},
+				sysdate(),
+				sysdate()
+			)
+		</foreach>
+	</insert>
+
+	<update id="updateCargo" parameterType="com.tms.system.domain.TmsOrderCargo">
+		update tms_order_cargo
+		<set>
+			<if test="sortNum != null">sort_num = #{sortNum},</if>
+			<if test="cargoName != null and cargoName != ''">cargo_name = #{cargoName},</if>
+			<if test="quantity != null">quantity = #{quantity},</if>
+			<if test="unit != null">unit = #{unit},</if>
+			<if test="volume != null">volume = #{volume},</if>
+			<if test="weight != null">weight = #{weight},</if>
+			<if test="remark != null">remark = #{remark},</if>
+			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+			update_time = sysdate()
+		</set>
+		where cargo_id = #{cargoId}
+	</update>
+
+	<update id="deleteCargoByOrderId" parameterType="Long">
+		update tms_order_cargo set is_del = '1', update_time = sysdate() where order_id = #{orderId}
+	</update>
+
+	<update id="deleteCargoById" parameterType="Long">
+		update tms_order_cargo set is_del = '1', update_time = sysdate() where cargo_id = #{cargoId}
+	</update>
+
+</mapper>

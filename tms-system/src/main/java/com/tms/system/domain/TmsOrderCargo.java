@@ -33,11 +33,17 @@ public class TmsOrderCargo extends BaseEntity {
     /** 单位 */
     private String unit;
 
-    /** 体积m³ */
-    private BigDecimal volume;
-
     /** 重量kg */
     private BigDecimal weight;
+
+    /** 车辆类型（前端枚举文案，如：厢式车） */
+    private String vehicleType;
+
+    /** 车辆长度（前端枚举文案，如：4.2米） */
+    private String vehicleLength;
+
+    /** 用车数量 */
+    private Integer vehicleCount;
 
     /** 删除标志（0存在 1删除） */
     private String isDel;

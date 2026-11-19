@@ -2,12 +2,14 @@ import BasicTable, { BasicTableRef } from "@/components/BasicTable"
 import TableSection from "@/components/TableSection"
 import { useMemo, useRef, useState } from "react"
 import { AddIcon, DeleteIcon, FileExportIcon } from "tdesign-icons-react"
-import { Button, Input, TableProps, Tag } from "tdesign-react"
+import { Button, TableProps, Tag } from "tdesign-react"
 import type { FormConfig } from "@/interface"
 import api from "@/api"
 import { getParams } from "@/utils/methods"
 import SearchBox, { SearchBoxRef } from "@/components/SearchBox"
 import MoreActions from "@/components/MoreActions"
+import InputText from "@/components/InputText"
+import { useNavigate } from "react-router-dom"
 interface OrderRow {
   orderId: number
   orderNo?: string
@@ -27,7 +29,6 @@ interface OrderRow {
   transportType?: string
   cargoType?: string
   totalQuantity?: number
-  totalVolume?: number
   totalWeight?: number
   totalFee?: number
   orderSource?: string
@@ -39,22 +40,23 @@ export default function order() {
   const searchRef = useRef<SearchBoxRef>(null)
   const tableRef = useRef<BasicTableRef<OrderRow>>(null)
   const [selectedKeys, setSelectedKeys] = useState<Array<string | number>>([])
+  const navigate = useNavigate()
   const formConfig = useMemo<FormConfig[]>(
     () => [
       {
         label: "账号",
         name: "account",
-        component: <Input clearable placeholder="请输入账号" />,
+        component: <InputText clearable placeholder="请输入账号" />,
       },
       {
         label: "昵称",
         name: "nickName",
-        component: <Input clearable placeholder="请输入昵称" />,
+        component: <InputText clearable placeholder="请输入昵称" />,
       },
       {
         label: "手机号码",
         name: "phone",
-        component: <Input clearable placeholder="请输入手机号码" />,
+        component: <InputText clearable placeholder="请输入手机号码" />,
       },
     ],
     [],
@@ -137,7 +139,6 @@ export default function order() {
       { title: "订单类型", colKey: "transportType", width: 100, align: "center", ellipsis: true },
       { title: "货物类型", colKey: "cargoType", width: 100, align: "center", ellipsis: true },
       { title: "货物数量", colKey: "totalQuantity", width: 100, align: "center" },
-      { title: "总体积", colKey: "totalVolume", width: 100, align: "center" },
       { title: "总重量", colKey: "totalWeight", width: 100, align: "center" },
       { title: "运费合计", colKey: "totalFee", width: 110, align: "center" },
       { title: "订单来源", colKey: "orderSource", width: 110, align: "center", ellipsis: true },
@@ -175,7 +176,7 @@ export default function order() {
       </TableSection.Header>
       <TableSection.Content>
         <TableSection.ToolbarRight>
-          <Button theme="primary" icon={<AddIcon />}>
+          <Button theme="primary" icon={<AddIcon />} onClick={() => navigate("/order/create")}>
             新增
           </Button>
           <Button theme="danger" variant="outline" icon={<DeleteIcon />}>

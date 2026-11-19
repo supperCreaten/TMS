@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
-import { Form, Input, InputNumber, Radio, Textarea, TreeSelect, type TreeSelectProps } from "tdesign-react"
+import InputText from "@/components/InputText"
+import { Form, InputNumber, Radio, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
@@ -89,14 +90,14 @@ export default function AddPost(props: AddPostProps) {
         name: "postName",
         colProps: { span: 12 },
         rules: [{ required: true, message: "请输入岗位名称" }],
-        component: <Input clearable placeholder="请输入岗位名称" />,
+        component: <InputText clearable placeholder="请输入岗位名称" />,
       },
       {
         label: "岗位编码",
         name: "postCode",
         colProps: { span: 12 },
         rules: [{ required: true, message: "请输入岗位编码" }],
-        component: <Input clearable placeholder="请输入岗位编码" />,
+        component: <InputText clearable placeholder="请输入岗位编码" />,
       },
       {
         label: "归属部门",
@@ -133,7 +134,7 @@ export default function AddPost(props: AddPostProps) {
         label: "备注",
         name: "remark",
         colProps: { span: 12 },
-        component: <Textarea maxlength={200} placeholder="备注" autosize={{ minRows: 3, maxRows: 5 }} />,
+        component: <InputText textarea maxlength={200} placeholder="备注" autosize={{ minRows: 3, maxRows: 5 }} />,
       },
     ],
     [deptTree],

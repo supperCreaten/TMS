@@ -5,19 +5,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.tms.system.mapper.TmsOrderCargoMapper">
 
 	<resultMap type="com.tms.system.domain.vo.TmsOrderCargoVo" id="TmsOrderCargoVoResult">
-		<id     property="cargoId"    column="cargo_id"    />
-		<result property="orderId"    column="order_id"    />
-		<result property="sortNum"    column="sort_num"    />
-		<result property="cargoName"  column="cargo_name"  />
-		<result property="quantity"   column="quantity"    />
-		<result property="unit"       column="unit"        />
-		<result property="volume"     column="volume"      />
-		<result property="weight"     column="weight"      />
-		<result property="remark"     column="remark"      />
+		<id     property="cargoId"        column="cargo_id"        />
+		<result property="orderId"        column="order_id"        />
+		<result property="sortNum"        column="sort_num"        />
+		<result property="cargoName"      column="cargo_name"      />
+		<result property="quantity"       column="quantity"        />
+		<result property="unit"           column="unit"            />
+		<result property="weight"         column="weight"          />
+		<result property="vehicleType"    column="vehicle_type"    />
+		<result property="vehicleLength"  column="vehicle_length"  />
+		<result property="vehicleCount"   column="vehicle_count"   />
+		<result property="remark"         column="remark"          />
 	</resultMap>
 
 	<sql id="selectCargoVo">
-		select cargo_id, order_id, sort_num, cargo_name, quantity, unit, volume, weight, remark
+		select cargo_id, order_id, sort_num, cargo_name, quantity, unit, weight,
+			vehicle_type, vehicle_length, vehicle_count, remark
 		from tms_order_cargo
 	</sql>
 
@@ -32,18 +35,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			order_id,
 			<if test="sortNum != null">sort_num,</if>
 			<if test="cargoName != null and cargoName != ''">cargo_name,</if>
-			quantity, unit,
-			<if test="volume != null">volume,</if>
-			weight,
+			quantity, unit, weight,
+			<if test="vehicleType != null and vehicleType != ''">vehicle_type,</if>
+			<if test="vehicleLength != null and vehicleLength != ''">vehicle_length,</if>
+			<if test="vehicleCount != null">vehicle_count,</if>
 			<if test="remark != null and remark != ''">remark,</if>
 			is_del, create_by, update_by, create_time, update_time
 		)values(
 			#{orderId},
 			<if test="sortNum != null">#{sortNum},</if>
 			<if test="cargoName != null and cargoName != ''">#{cargoName},</if>
-			#{quantity}, #{unit},
-			<if test="volume != null">#{volume},</if>
-			#{weight},
+			#{quantity}, #{unit}, #{weight},
+			<if test="vehicleType != null and vehicleType != ''">#{vehicleType},</if>
+			<if test="vehicleLength != null and vehicleLength != ''">#{vehicleLength},</if>
+			<if test="vehicleCount != null">#{vehicleCount},</if>
 			<if test="remark != null and remark != ''">#{remark},</if>
 			'0', #{createBy}, #{updateBy}, sysdate(), sysdate()
 		)
@@ -51,7 +56,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<insert id="batchInsertCargo" parameterType="java.util.List">
 		insert into tms_order_cargo(
-			order_id, sort_num, cargo_name, quantity, unit, volume, weight, remark,
+			order_id, sort_num, cargo_name, quantity, unit, weight,
+			vehicle_type, vehicle_length, vehicle_count, remark,
 			is_del, create_by, update_by, create_time, update_time
 		) values
 		<foreach collection="list" item="item" separator=",">
@@ -61,8 +67,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				#{item.cargoName},
 				#{item.quantity},
 				#{item.unit},
-				#{item.volume},
 				#{item.weight},
+				#{item.vehicleType},
+				#{item.vehicleLength},
+				#{item.vehicleCount},
 				#{item.remark},
 				'0',
 				#{item.createBy},
@@ -80,8 +88,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="cargoName != null and cargoName != ''">cargo_name = #{cargoName},</if>
 			<if test="quantity != null">quantity = #{quantity},</if>
 			<if test="unit != null">unit = #{unit},</if>
-			<if test="volume != null">volume = #{volume},</if>
 			<if test="weight != null">weight = #{weight},</if>
+			<if test="vehicleType != null">vehicle_type = #{vehicleType},</if>
+			<if test="vehicleLength != null">vehicle_length = #{vehicleLength},</if>
+			<if test="vehicleCount != null">vehicle_count = #{vehicleCount},</if>
 			<if test="remark != null">remark = #{remark},</if>
 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
 			update_time = sysdate()

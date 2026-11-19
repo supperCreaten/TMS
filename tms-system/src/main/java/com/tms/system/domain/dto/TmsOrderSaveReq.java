@@ -77,15 +77,6 @@ public class TmsOrderSaveReq {
     /** 计划运输时长（小时，用于限制司机时效） */
     private Integer planTransportDuration;
 
-    /** 车辆类型 */
-    private String vehicleType;
-
-    /** 车辆长度 */
-    private String vehicleLength;
-
-    /** 用车数量 */
-    private Integer vehicleCount;
-
     /** 计费方式 */
     @NotBlank(message = "计费方式不能为空")
     private String billingMethod;

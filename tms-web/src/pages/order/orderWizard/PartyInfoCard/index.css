@@ -1,0 +1,90 @@
+.party-info-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.party-info-card {
+  padding: 0;
+}
+
+.party-info-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--td-component-stroke, #e7e7e7);
+}
+
+.party-info-card__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.party-info-card--sender .party-info-card__dot {
+  color: var(--td-warning-color-5, #ed7b2f);
+  background: var(--td-warning-color-5, #ed7b2f);
+}
+
+.party-info-card--receiver .party-info-card__dot {
+  color: var(--td-brand-color, #0052d9);
+  background: var(--td-brand-color, #0052d9);
+}
+
+.party-info-card__title {
+  flex-shrink: 0;
+  color: var(--td-text-color-primary, #152433);
+  font-size: var(--td-font-size-body-medium, 14px);
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.party-info-card__hint {
+  flex-shrink: 0;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: var(--td-bg-color-secondarycontainer, #f3f3f3);
+  color: var(--td-text-color-secondary, #5e6d82);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.party-info-card--sender .party-info-card__hint {
+  background: color-mix(in srgb, var(--td-warning-color-1, #fff1e9) 85%, #fff);
+  color: var(--td-warning-color-6, #d35a21);
+}
+
+.party-info-card--receiver .party-info-card__hint {
+  background: color-mix(in srgb, var(--td-brand-color-1, #f2f3ff) 85%, #fff);
+  color: var(--td-brand-color, #0052d9);
+}
+
+.party-info-card__dash {
+  flex: 1;
+  min-width: 12px;
+  height: 0;
+  margin-left: 4px;
+  border-top: 1px dashed var(--td-component-border, #e5e6eb);
+}
+
+.party-info-card__form.basic-form {
+  width: 100%;
+}
+
+.party-info-card__form.basic-form--reserve-error .basic-form__col > .t-form__item,
+.party-info-card__form.basic-form--reserve-error .basic-form__col > .t-form__item.t-form__item-with-help,
+.party-info-card__form.basic-form--reserve-error .basic-form__col > .t-form__item.t-form__item-with-extra {
+  margin-bottom: 18px;
+}
+
+/* 末项少留底距，区块 gap 承担分隔，避免错误文案后再空一大截 */
+.party-info-card__form.basic-form--reserve-error .basic-form__col:last-child > .t-form__item,
+.party-info-card__form.basic-form--reserve-error .basic-form__col:last-child > .t-form__item.t-form__item-with-help,
+.party-info-card__form.basic-form--reserve-error .basic-form__col:last-child > .t-form__item.t-form__item-with-extra {
+  margin-bottom: 12px;
+}

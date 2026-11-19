@@ -22,9 +22,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="destination"        column="destination"          />
 		<result property="receiverAddress"    column="receiver_address"     />
 		<result property="planTransportDuration"  column="plan_transport_duration"   />
-		<result property="vehicleType"        column="vehicle_type"         />
-		<result property="vehicleLength"      column="vehicle_length"       />
-		<result property="vehicleCount"       column="vehicle_count"        />
 		<result property="billingMethod"      column="billing_method"       />
 		<result property="transportFee"       column="transport_fee"        />
 		<result property="insuranceFee"       column="insurance_fee"        />
@@ -41,7 +38,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="payPeriod"          column="pay_period"           />
 		<result property="payTotal"           column="pay_total"            />
 		<result property="totalQuantity"      column="total_quantity"       />
-		<result property="totalVolume"        column="total_volume"         />
 		<result property="totalWeight"        column="total_weight"         />
 		<result property="createBy"           column="create_by"            />
 		<result property="createTime"         column="create_time"          />
@@ -71,9 +67,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="destination"        column="destination"          />
 		<result property="receiverAddress"    column="receiver_address"     />
 		<result property="planTransportDuration"  column="plan_transport_duration"   />
-		<result property="vehicleType"        column="vehicle_type"         />
-		<result property="vehicleLength"      column="vehicle_length"       />
-		<result property="vehicleCount"       column="vehicle_count"        />
 		<result property="billingMethod"      column="billing_method"       />
 		<result property="transportFee"       column="transport_fee"        />
 		<result property="insuranceFee"       column="insurance_fee"        />
@@ -90,7 +83,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="payPeriod"          column="pay_period"           />
 		<result property="payTotal"           column="pay_total"            />
 		<result property="totalQuantity"      column="total_quantity"       />
-		<result property="totalVolume"        column="total_volume"         />
 		<result property="totalWeight"        column="total_weight"         />
 		<result property="isDel"              column="is_del"               />
 		<result property="createBy"           column="create_by"            />
@@ -104,11 +96,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select order_id, order_no, waybill_no, customer_name, order_status, order_source,
 			transport_type, cargo_type, sender_name, sender_phone, origin, sender_address,
 			receiver_name, receiver_phone, destination, receiver_address,
-			plan_transport_duration,
-			vehicle_type, vehicle_length, vehicle_count, billing_method,
+			plan_transport_duration, billing_method,
 			transport_fee, insurance_fee, packing_fee, loading_fee, transfer_fee, fuel_fee, service_fee, other_fee, total_fee,
 			pay_cash, pay_prepaid, pay_cod, pay_period, pay_total,
-			total_quantity, total_volume, total_weight,
+			total_quantity, total_weight,
 			is_del, create_by, create_time, update_by, update_time, remark
 		from tms_order
 	</sql>
@@ -171,14 +162,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="destination != null and destination != ''">destination,</if>
 			<if test="receiverAddress != null and receiverAddress != ''">receiver_address,</if>
 			<if test="planTransportDuration != null">plan_transport_duration,</if>
-			<if test="vehicleType != null and vehicleType != ''">vehicle_type,</if>
-			<if test="vehicleLength != null and vehicleLength != ''">vehicle_length,</if>
-			<if test="vehicleCount != null">vehicle_count,</if>
 			<if test="billingMethod != null and billingMethod != ''">billing_method,</if>
 			transport_fee, insurance_fee, packing_fee, loading_fee, transfer_fee,
 			fuel_fee, service_fee, other_fee, total_fee,
 			pay_cash, pay_prepaid, pay_cod, pay_period, pay_total,
-			total_quantity, total_volume, total_weight,
+			total_quantity, total_weight,
 			<if test="remark != null and remark != ''">remark,</if>
 			is_del, create_by, update_by, create_time, update_time
 		)values(
@@ -198,14 +186,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="destination != null and destination != ''">#{destination},</if>
 			<if test="receiverAddress != null and receiverAddress != ''">#{receiverAddress},</if>
 			<if test="planTransportDuration != null">#{planTransportDuration},</if>
-			<if test="vehicleType != null and vehicleType != ''">#{vehicleType},</if>
-			<if test="vehicleLength != null and vehicleLength != ''">#{vehicleLength},</if>
-			<if test="vehicleCount != null">#{vehicleCount},</if>
 			<if test="billingMethod != null and billingMethod != ''">#{billingMethod},</if>
 			#{transportFee}, #{insuranceFee}, #{packingFee}, #{loadingFee}, #{transferFee},
 			#{fuelFee}, #{serviceFee}, #{otherFee}, #{totalFee},
 			#{payCash}, #{payPrepaid}, #{payCod}, #{payPeriod}, #{payTotal},
-			#{totalQuantity}, #{totalVolume}, #{totalWeight},
+			#{totalQuantity}, #{totalWeight},
 			<if test="remark != null and remark != ''">#{remark},</if>
 			'0', #{createBy}, #{updateBy}, sysdate(), sysdate()
 		)
@@ -229,9 +214,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="destination != null and destination != ''">destination = #{destination},</if>
 			<if test="receiverAddress != null and receiverAddress != ''">receiver_address = #{receiverAddress},</if>
 			<if test="planTransportDuration != null">plan_transport_duration = #{planTransportDuration},</if>
-			<if test="vehicleType != null">vehicle_type = #{vehicleType},</if>
-			<if test="vehicleLength != null">vehicle_length = #{vehicleLength},</if>
-			<if test="vehicleCount != null">vehicle_count = #{vehicleCount},</if>
 			<if test="billingMethod != null and billingMethod != ''">billing_method = #{billingMethod},</if>
 			<if test="transportFee != null">transport_fee = #{transportFee},</if>
 			<if test="insuranceFee != null">insurance_fee = #{insuranceFee},</if>
@@ -248,7 +230,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="payPeriod != null">pay_period = #{payPeriod},</if>
 			<if test="payTotal != null">pay_total = #{payTotal},</if>
 			<if test="totalQuantity != null">total_quantity = #{totalQuantity},</if>
-			<if test="totalVolume != null">total_volume = #{totalVolume},</if>
 			<if test="totalWeight != null">total_weight = #{totalWeight},</if>
 			<if test="remark != null">remark = #{remark},</if>
 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer } from "react"
-import { Form, Input, Radio, Select, Textarea, TreeSelect, type TreeSelectProps } from "tdesign-react"
+import InputText from "@/components/InputText"
+import { Form, Radio, Select, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
@@ -164,7 +165,7 @@ export default function AddUser(props: AddUserProps) {
         name: "nickName",
         colProps: { span: 6 },
         rules: [{ required: true, message: "请输入昵称" }],
-        component: <Input clearable placeholder="昵称" />,
+        component: <InputText clearable placeholder="昵称" />,
       },
       {
         label: "归属部门",
@@ -195,21 +196,21 @@ export default function AddUser(props: AddUserProps) {
           { required: true, message: "请输入手机号码" },
           { pattern: /^1\d{10}$/, message: "请输入正确的手机号码" },
         ],
-        component: <Input clearable maxlength={11} placeholder="请输入手机号码" />,
+        component: <InputText clearable maxlength={11} placeholder="请输入手机号码" />,
       },
       {
         label: "邮箱",
         name: "email",
         colProps: { span: 6 },
         rules: [{ email: true, message: "请输入正确的邮箱地址" }],
-        component: <Input clearable placeholder="请输入邮箱" />,
+        component: <InputText clearable placeholder="请输入邮箱" />,
       },
       {
         label: "账号",
         name: "account",
         colProps: { span: 6 },
         rules: [{ required: true, message: "请输入账号" }],
-        component: <Input clearable disabled={isEdit} placeholder="请输入账号" />,
+        component: <InputText clearable disabled={isEdit} placeholder="请输入账号" />,
       },
       {
         label: "用户密码",
@@ -217,7 +218,7 @@ export default function AddUser(props: AddUserProps) {
         colProps: { span: 6 },
         rules: passwordRules,
         component: (
-          <Input
+          <InputText
             type="password"
             clearable
             autocomplete="new-password"
@@ -273,7 +274,7 @@ export default function AddUser(props: AddUserProps) {
         name: "remark",
         colProps: { span: 12 },
         component: (
-          <Textarea maxlength={200} placeholder="请输入内容" autosize={{ minRows: 3, maxRows: 5 }} />
+          <InputText textarea maxlength={200} placeholder="请输入内容" autosize={{ minRows: 3, maxRows: 5 }} />
         ),
       },
     ],

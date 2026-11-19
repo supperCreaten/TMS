@@ -71,15 +71,6 @@ public class TmsOrder extends BaseEntity {
     /** 计划运输时长（小时，用于限制司机时效） */
     private Integer planTransportDuration;
 
-    /** 车辆类型 */
-    private String vehicleType;
-
-    /** 车辆长度 */
-    private String vehicleLength;
-
-    /** 用车数量 */
-    private Integer vehicleCount;
-
     /** 计费方式 */
     private String billingMethod;
 
@@ -127,9 +118,6 @@ public class TmsOrder extends BaseEntity {
 
     /** 货物总数量（汇总） */
     private BigDecimal totalQuantity;
-
-    /** 总体积m³（汇总） */
-    private BigDecimal totalVolume;
 
     /** 总重量kg（汇总） */
     private BigDecimal totalWeight;

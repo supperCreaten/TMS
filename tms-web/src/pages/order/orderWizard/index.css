@@ -1,0 +1,60 @@
+/* 末项少留底距，与下方区块 gap 衔接，避免错误文案后再空一大截 */
+.order-wizard-basic__form.basic-form--reserve-error .basic-form__col:last-child > .t-form__item,
+.order-wizard-basic__form.basic-form--reserve-error .basic-form__col:last-child > .t-form__item.t-form__item-with-help,
+.order-wizard-basic__form.basic-form--reserve-error .basic-form__col:last-child > .t-form__item.t-form__item-with-extra {
+  margin-bottom: 12px;
+}
+
+/* 货物虚拟表格：限高滚动，输入控件铺满单元格 */
+.order-wizard-cargo {
+  min-height: 0;
+}
+
+.order-wizard-cargo .basic-table {
+  height: 480px;
+}
+
+.order-wizard-cargo .t-input,
+.order-wizard-cargo .t-textarea,
+.order-wizard-cargo .t-select__wrap {
+  width: 100%;
+}
+
+.order-wizard-cargo .t-textarea {
+  min-height: 32px;
+}
+
+.order-wizard-cargo .t-textarea__inner {
+  min-height: 32px !important;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  line-height: 22px;
+  resize: none;
+}
+
+.order-wizard-cargo__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--td-component-border, #dcdcdc);
+  border-top: 0;
+  background: var(--td-bg-color-secondarycontainer, #f3f3f3);
+  color: var(--td-text-color-primary, #000000e6);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.order-wizard-cargo__summary-label {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.order-wizard-cargo__summary-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 24px;
+}

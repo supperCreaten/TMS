@@ -10,7 +10,7 @@ import { validateTableDataSource, type TableFieldRule } from "@/utils/table"
 import NP from "number-precision"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { ColProps, TableProps } from "tdesign-react"
-import { Button, Select } from "tdesign-react"
+import { Button, DatePicker, Select } from "tdesign-react"
 import { AddIcon } from "tdesign-icons-react"
 import {
   CARGO_TYPE_OPTIONS,
@@ -180,13 +180,20 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         component: <Select placeholder="请选择货物类型" clearable filterable options={CARGO_TYPE_OPTIONS} />,
       },
       {
-        name: "planTransportTime",
-        label: "计划运输时长",
-        rules: [
-          { required: true, message: "请输入计划运输时长" },
-          { pattern: /^(?!0+(?:\.0+)?$)\d+(?:\.\d{1,2})?$/, message: "请输入正数，最多两位小数" },
-        ],
-        component: <InputText clearable placeholder="请输入计划运输时长" decimalPlaces={2} positive />,
+        name: "expectArriveTime",
+        label: "期望送达时间",
+        rules: [{ required: true, message: "请选择期望送达时间" }],
+        component: (
+          <DatePicker
+            clearable
+            enableTimePicker
+            allowInput
+            placeholder="请选择期望送达时间"
+            format="YYYY-MM-DD HH:mm:ss"
+            valueType="YYYY-MM-DD HH:mm:ss"
+            className="w-full"
+          />
+        ),
       },
     ],
     [mode],

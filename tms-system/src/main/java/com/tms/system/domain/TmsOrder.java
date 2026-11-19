@@ -1,6 +1,7 @@
 package com.tms.system.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import com.tms.common.core.domain.BaseEntity;
 import lombok.Data;
@@ -68,8 +69,8 @@ public class TmsOrder extends BaseEntity {
     /** 收货地址 */
     private String receiverAddress;
 
-    /** 计划运输时长（小时，用于限制司机时效） */
-    private Integer planTransportDuration;
+    /** 期望送达时间 */
+    private Date expectArriveTime;
 
     /** 计费方式 */
     private String billingMethod;

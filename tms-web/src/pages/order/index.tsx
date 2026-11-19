@@ -25,7 +25,7 @@ interface OrderRow {
   receiverName?: string
   receiverPhone?: string
   receiverAddress?: string
-  planTransportDuration?: number
+  expectArriveTime?: string
   transportType?: string
   cargoType?: string
   totalQuantity?: number
@@ -131,10 +131,11 @@ export default function order() {
         ),
       },
       {
-        title: "计划运输时长",
-        colKey: "planTransportDuration",
-        width: 130,
+        title: "客户期望送达时间",
+        colKey: "expectArriveTime",
+        width: 170,
         align: "center",
+        ellipsis: true,
       },
       { title: "订单类型", colKey: "transportType", width: 100, align: "center", ellipsis: true },
       { title: "货物类型", colKey: "cargoType", width: 100, align: "center", ellipsis: true },

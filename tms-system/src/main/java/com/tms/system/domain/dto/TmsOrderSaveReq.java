@@ -1,7 +1,9 @@
 package com.tms.system.domain.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -74,8 +76,9 @@ public class TmsOrderSaveReq {
     @NotBlank(message = "收货地址不能为空")
     private String receiverAddress;
 
-    /** 计划运输时长（小时，用于限制司机时效） */
-    private Integer planTransportDuration;
+    /** 期望送达时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date expectArriveTime;
 
     /** 计费方式 */
     @NotBlank(message = "计费方式不能为空")

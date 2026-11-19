@@ -823,3 +823,8 @@ html body {
 body.sidebar-resizing .layout-main-section {
   transition: none !important;
 }
+
+/* Loading 包裹层铺满父级高度，便于遮罩垂直居中 */
+.t-loading__parent {
+  height: 100%;
+}

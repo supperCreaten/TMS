@@ -11,6 +11,7 @@ export const ORDER_DICT = {
 /** 基础信息 baseInfoForm（value 为字典英文编码） */
 export const mockBaseInfo = {
   orderNo: "", // 新增为空，自动生成
+  customerId: "1",
   customerName: "杭州云启科技有限公司", // 注意：当前 Select 的 value 是 customerId，回显要用真实 customerId 才能选中
   createTime: "",
   orderSource: "manual",

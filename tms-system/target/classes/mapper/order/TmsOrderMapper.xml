@@ -111,6 +111,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where o.order_no = #{orderNo} and o.is_del = '0' limit 1
 	</select>
 
+	<select id="selectMaxOrderNoByPrefix" resultType="String">
+		select max(order_no) from tms_order where order_no like concat(#{prefix}, '%')
+	</select>
+
 	<insert id="insertOrder" parameterType="com.tms.system.domain.dto.TmsOrderSaveReq" useGeneratedKeys="true" keyProperty="orderId">
 		insert into tms_order(
 			<if test="orderNo != null and orderNo != ''">order_no,</if>

@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { ColProps, TableProps } from "tdesign-react"
 import { Button, DatePicker, Form, MessagePlugin, Select } from "tdesign-react"
 import { AddIcon } from "tdesign-icons-react"
-import { mockBaseInfo, mockCargoList, mockReceiver, mockSender, ORDER_DICT } from "../constants"
+import { ORDER_DICT } from "../constants"
 import { PartyInfoCard, PartyInfoPair } from "./PartyInfoCard"
 import "./index.css"
 import api from "@/api"
@@ -167,10 +167,8 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
   useEffect(() => {
     const request = async () => {
       await getCustomerList()
-      baseInfoForm.setFieldsValue({ ...mockBaseInfo })
-      senderForm.setFieldsValue({ ...mockSender })
-      receiverForm.setFieldsValue({ ...mockReceiver })
-      tableRef.current?.setTableData(mockCargoList)
+      const orderId = searchParams.get("orderId")
+      orderId && getOrderDetail(orderId)
     }
     request()
   }, [])
@@ -468,6 +466,19 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
       vehicleLengthOptions,
     ],
   )
+  const getOrderDetail = useCallback(
+    async (orderId: string) => {
+      if (!orderId) return
+      const data = await api.getOrderDetail(orderId)
+      const { cargoList = [], ...formValues } = data || {}
+      baseInfoForm.setFieldsValue(formValues)
+      senderForm.setFieldsValue(formValues)
+      receiverForm.setFieldsValue(formValues)
+      tableRef.current?.setTableData(cargoList)
+    },
+    [baseInfoForm, senderForm, receiverForm],
+  )
+
   const handleSubmit = useCallback(async () => {
     await Promise.all([baseInfoForm.validate(), senderForm.validate(), receiverForm.validate()])
     const result = validateTableDataSource(() => tableRef.current?.getDataSource() ?? [], {

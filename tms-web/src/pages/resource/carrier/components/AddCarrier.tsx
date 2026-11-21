@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { DatePicker, Form, Loading, Select, Switch } from "tdesign-react"
 import api from "@/api"
+import type { CarrierDetail } from "@/api/modules/carrier"
 import AreaCascader from "@/components/AreaCascader"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
@@ -42,12 +43,6 @@ type CarrierFormValues = {
   contractFileUrl?: string
   contractExpireDate?: string
   remark?: string
-}
-
-type CarrierDetail = Omit<CarrierFormValues, "region" | "contractSigned"> & {
-  carrierId?: number | string
-  region?: string | string[]
-  contractSigned?: string
 }
 
 const initialValues: CarrierFormValues = {
@@ -306,11 +301,12 @@ export default function AddCarrier(props: AddCarrierProps) {
         contractForm.reset()
         contractForm.setFieldsValue({ ...initialValues })
         if (!isEdit || !carrierId) return
-        const data = (await api.getCarrierDetail(carrierId)) as CarrierDetail
-        baseInfoForm.setFieldsValue(mapDetailToForm(data))
-        contactForm.setFieldsValue(mapDetailToForm(data))
-        contractForm.setFieldsValue(mapDetailToForm(data))
-        financeForm.setFieldsValue(mapDetailToForm(data))
+        const data = await api.getCarrierDetail(carrierId)
+        const formValues = mapDetailToForm(data)
+        baseInfoForm.setFieldsValue(formValues)
+        contactForm.setFieldsValue(formValues)
+        financeForm.setFieldsValue(formValues)
+        contractForm.setFieldsValue(formValues)
       } finally {
         setLoading(false)
       }

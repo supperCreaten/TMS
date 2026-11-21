@@ -33,6 +33,9 @@ public class AuthMenuVo
 
     private List<AuthMenuVo> children;
 
+    /**
+     * 构建路由 meta（title/icon/keepAlive）
+     */
     public static Map<String, Object> buildMeta(String title, String icon, int keepAlive)
     {
         Map<String, Object> meta = new LinkedHashMap<>(4);

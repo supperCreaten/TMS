@@ -2,6 +2,7 @@ import { useEffect, useMemo, useReducer } from "react"
 import InputText from "@/components/InputText"
 import { Form, Radio, Select, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
+import type { UserDetail } from "@/api/modules/user"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import PasswordStrength from "@/components/PasswordStrength"
@@ -32,21 +33,6 @@ type UserFormValues = {
   status?: string
   postId?: string
   roleIds?: string[]
-  remark?: string
-}
-
-type UserDetail = {
-  nickName?: string
-  deptId?: string | number
-  phone?: string
-  phonenumber?: string
-  email?: string
-  account?: string
-  userName?: string
-  sex?: string
-  status?: string | number
-  postId?: string | number
-  roleIds?: Array<string | number>
   remark?: string
 }
 
@@ -319,7 +305,7 @@ export default function AddUser(props: AddUserProps) {
         })
 
         if (!isEdit || !userId) return
-        const detail = (await api.getUserDetail({ userId })) as UserDetail
+        const detail = await api.getUserDetail({ userId })
         form.setFieldsValue(mapDetailToForm(detail))
       } finally {
         dispatch({ loading: false })

@@ -12,6 +12,9 @@ public final class RegionCodes {
     private RegionCodes() {
     }
 
+    /**
+     * 按层级取下标编码
+     */
     public static String at(List<String> codes, int index) {
         if (codes == null || index < 0 || index >= codes.size()) {
             return null;
@@ -20,6 +23,9 @@ public final class RegionCodes {
         return StringUtils.isEmpty(code) ? null : code;
     }
 
+    /**
+     * 合并为编码列表
+     */
     public static List<String> toList(String province, String city, String district) {
         if (StringUtils.isEmpty(province) && StringUtils.isEmpty(city) && StringUtils.isEmpty(district)) {
             return Collections.emptyList();
@@ -37,3 +43,4 @@ public final class RegionCodes {
         return list;
     }
 }
+

@@ -28,11 +28,17 @@ public class SysDeptServiceImpl implements ISysDeptService {
     @Autowired
     private SysDeptMapper deptMapper;
 
+    /**
+     * 查询部门列表
+     */
     @Override
     public List<SysDeptVo> selectDeptList(SysDeptQuery query) {
         return deptMapper.selectDeptList(query == null ? new SysDeptQuery() : query);
     }
 
+    /**
+     * 构建部门树
+     */
     @Override
     public List<SysDeptVo> buildDeptTree(List<SysDeptVo> depts) {
         List<SysDeptVo> returnList = new ArrayList<>();
@@ -49,22 +55,34 @@ public class SysDeptServiceImpl implements ISysDeptService {
         return returnList;
     }
 
+    /**
+     * 构建部门下拉树
+     */
     @Override
     public List<TreeSelect> buildDeptTreeSelect(List<SysDeptVo> depts) {
         List<SysDeptVo> deptTrees = buildDeptTree(depts);
         return deptTrees.stream().map(this::toTreeSelect).collect(Collectors.toList());
     }
 
+    /**
+     * 根据ID查询部门
+     */
     @Override
     public SysDeptVo selectDeptById(Long deptId) {
         return deptMapper.selectDeptById(deptId);
     }
 
+    /**
+     * 是否存在子部门
+     */
     @Override
     public boolean hasChildByDeptId(Long deptId) {
         return deptMapper.hasChildByDeptId(deptId) > 0;
     }
 
+    /**
+     * 校验部门名称唯一
+     */
     @Override
     public boolean checkDeptNameUnique(SysDeptSaveReq dept) {
         long deptId = StringUtils.isNull(dept.getDeptId()) ? -1L : dept.getDeptId();
@@ -76,6 +94,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
         return UserConstants.UNIQUE;
     }
 
+    /**
+     * 新增部门
+     */
     @Override
     public int insertDept(SysDeptSaveReq dept) {
         if (dept.getParentId() == null) {
@@ -99,6 +120,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
         return deptMapper.insertDept(dept);
     }
 
+    /**
+     * 修改部门
+     */
     @Override
     public int updateDept(SysDeptSaveReq dept) {
         if (dept.getParentId() == null) {
@@ -137,6 +161,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
         deptMapper.updateDeptStatusNormal(deptIds);
     }
 
+    /**
+     * 更新子部门祖先链
+     */
     public void updateDeptChildren(Long deptId, String newAncestors, String oldAncestors) {
         List<SysDeptVo> children = deptMapper.selectChildrenDeptById(deptId);
         for (SysDeptVo child : children) {
@@ -147,6 +174,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
         }
     }
 
+    /**
+     * 删除部门
+     */
     @Override
     public int deleteDeptById(Long deptId) {
         return deptMapper.deleteDeptById(deptId);
@@ -190,3 +220,4 @@ public class SysDeptServiceImpl implements ISysDeptService {
         return !getChildList(list, t).isEmpty();
     }
 }
+

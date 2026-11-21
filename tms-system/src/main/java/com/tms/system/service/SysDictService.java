@@ -6,6 +6,9 @@ import com.tms.system.domain.dto.SysDictSaveReq;
 
 import java.util.List;
 
+/**
+ * 字典类型 业务层
+ */
 public interface SysDictService {
     /**
      * 查询系统字典列表

@@ -73,6 +73,9 @@ public class LogAspect {
     @Autowired
     private OperBizDataLoader operBizDataLoader;
 
+    /**
+     * 记录开始时间并预加载修改前业务快照
+     */
     @Before(value = "@annotation(controllerLog)")
     public void doBefore(JoinPoint joinPoint, Log controllerLog) {
         TIME_THREADLOCAL.set(System.currentTimeMillis());
@@ -92,11 +95,17 @@ public class LogAspect {
         }
     }
 
+    /**
+     * 方法正常返回后记录操作日志
+     */
     @AfterReturning(pointcut = "@annotation(controllerLog)", returning = "jsonResult")
     public void doAfterReturning(JoinPoint joinPoint, Log controllerLog, Object jsonResult) {
         handleLog(joinPoint, controllerLog, null, jsonResult);
     }
 
+    /**
+     * 方法抛出异常时记录操作日志
+     */
     @AfterThrowing(value = "@annotation(controllerLog)", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Log controllerLog, Exception e) {
         handleLog(joinPoint, controllerLog, e, null);
@@ -258,10 +267,16 @@ public class LogAspect {
         return params.toString();
     }
 
+    /**
+     * 构建请求/响应序列化时的属性排除过滤器
+     */
     public PropertyPreExcludeFilter excludePropertyPreFilter(String[] excludeParamNames) {
         return new PropertyPreExcludeFilter().addExcludes(ArrayUtils.addAll(EXCLUDE_PROPERTIES, excludeParamNames));
     }
 
+    /**
+     * 判断对象是否应从日志参数中过滤（如文件、Request 等）
+     */
     @SuppressWarnings("rawtypes")
     public boolean isFilterObject(final Object o) {
         Class<?> clazz = o.getClass();

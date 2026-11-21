@@ -32,6 +32,9 @@ public class TmsCustomerController extends BaseController {
     @Autowired
     private ITmsCustomerService customerService;
 
+    /**
+     * 分页查询
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:list')")
     @Operation(summary = "客户分页列表")
     @PostMapping("/pageQuery")
@@ -42,6 +45,9 @@ public class TmsCustomerController extends BaseController {
         return getDataTable(list, pageInfo);
     }
 
+    /**
+     * 全量列表查询
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:list')")
     @Operation(summary = "客户全量列表")
     @PostMapping("/allQuery")
@@ -49,6 +55,9 @@ public class TmsCustomerController extends BaseController {
         return success(customerService.selectCustomerList(new TmsCustomerQuery()));
     }
 
+    /**
+     * 新增
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:edit')")
     @Log(title = "客户管理", businessType = BusinessType.INSERT)
     @Operation(summary = "新增客户")
@@ -60,6 +69,9 @@ public class TmsCustomerController extends BaseController {
         return toAjax(customerService.insertCustomer(req));
     }
 
+    /**
+     * 修改
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:edit')")
     @Log(title = "客户管理", businessType = BusinessType.UPDATE, bizId = "#req.customerId")
     @Operation(summary = "修改客户")
@@ -74,6 +86,9 @@ public class TmsCustomerController extends BaseController {
         return toAjax(customerService.updateCustomer(req));
     }
 
+    /**
+     * 根据ID查询
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:query')")
     @Operation(summary = "客户详情")
     @PostMapping("/queryById/{id}")
@@ -81,6 +96,9 @@ public class TmsCustomerController extends BaseController {
         return success(customerService.selectCustomerById(id));
     }
 
+    /**
+     * 删除
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:remove')")
     @Log(title = "客户管理", businessType = BusinessType.DELETE)
     @Operation(summary = "删除客户")
@@ -89,6 +107,9 @@ public class TmsCustomerController extends BaseController {
         return toAjax(customerService.deleteCustomerByIds(ids));
     }
 
+    /**
+     * 导出
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:export')")
     @Log(title = "客户管理", businessType = BusinessType.EXPORT)
     @Operation(summary = "导出客户")
@@ -99,6 +120,9 @@ public class TmsCustomerController extends BaseController {
         util.exportExcel(response, list, "客户数据");
     }
 
+    /**
+     * 下载导入模板
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:import')")
     @Operation(summary = "导入模板")
     @PostMapping("/importTemplate")
@@ -107,6 +131,9 @@ public class TmsCustomerController extends BaseController {
         util.importTemplateExcel(response, "客户数据");
     }
 
+    /**
+     * 导入数据
+     */
     @PreAuthorize("@ss.hasPermi('resource:customer:import')")
     @Log(title = "客户管理", businessType = BusinessType.IMPORT)
     @Operation(summary = "导入客户")
@@ -118,3 +145,4 @@ public class TmsCustomerController extends BaseController {
         return success(result);
     }
 }
+

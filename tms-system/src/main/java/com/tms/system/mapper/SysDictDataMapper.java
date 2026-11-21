@@ -4,7 +4,16 @@ import com.tms.system.domain.dto.SysDictDataSaveReq;
 
 import java.util.List;
 
+/**
+ * 字典数据 数据层
+ */
 public interface SysDictDataMapper {
+    /**
+     * 查询字典数据列表
+     *
+     * @param dictData 查询条件
+     * @return 字典数据列表
+     */
     List<SysDictDataSaveReq> selectDictDataList(SysDictDataSaveReq dictData);
 
     /**

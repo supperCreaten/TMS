@@ -24,6 +24,9 @@ public class SecurityUtils {
     /**
      * 用户ID
      **/
+    /**
+     * 获取用户ID *
+     */
     public static Long getUserId() {
         try {
             return getLoginUser().getUserId();
@@ -35,6 +38,9 @@ public class SecurityUtils {
     /**
      * 获取用户账户（登录账号 account）
      **/
+    /**
+     * 获取获取用户账户（登录账号 account） *
+     */
     public static String getUsername() {
         try {
             return getLoginUser().getUsername();
@@ -46,7 +52,7 @@ public class SecurityUtils {
     /**
      * 获取用户姓名（sys_user.user_name，对应 SysUser.nickName）
      * <p>用于 create_by / update_by 等展示字段；为空时回退登录账号</p>
-     **/
+     */
     public static String getNickName() {
         try {
             LoginUser loginUser = getLoginUser();
@@ -65,6 +71,9 @@ public class SecurityUtils {
     /**
      * 获取用户
      **/
+    /**
+     * 获取获取用户 *
+     */
     public static LoginUser getLoginUser() {
         try {
             return (LoginUser) getAuthentication().getPrincipal();

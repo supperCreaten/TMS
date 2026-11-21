@@ -4,9 +4,23 @@ import com.tms.system.domain.dto.SysDictSaveReq;
 
 import java.util.List;
 
+/**
+ * 字典类型 数据层
+ */
 public interface SysDictMapper {
+    /**
+     * 查询字典类型列表
+     *
+     * @param dict 查询条件
+     * @return 字典列表
+     */
     List<SysDictSaveReq> selectDictList(SysDictSaveReq dict);
 
+    /**
+     * 查询全部字典类型
+     *
+     * @return 字典列表
+     */
     List<SysDictSaveReq> selectDictAllList();
 
     /**

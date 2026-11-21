@@ -199,7 +199,13 @@ export default function order() {
             actionButtonProps={{ size: "small", style: { padding: "0 4px" } }}
             moreButtonProps={{ size: "small", style: { padding: "0 4px" } }}
             items={[
-              { key: "edit", label: "修改", onClick: () => {} },
+              {
+                key: "edit",
+                label: "修改",
+                onClick: () => {
+                  navigate(`/order/edit/?orderId=${row?.orderId}`)
+                },
+              },
               { key: "dispatch", label: "调度", onClick: () => {} },
               { key: "detail", label: "详情", theme: "danger", onClick: () => {} },
             ]}
@@ -231,9 +237,9 @@ export default function order() {
         </TableSection.ToolbarRight>
         <BasicTable
           ref={tableRef}
-          rowKey="userId"
+          rowKey="orderId"
           columns={columns}
-          request={api.getUserList}
+          request={api.orderPageQuery}
           searchParams={() => getParams(searchRef.current?.getFieldsValue(true) ?? {})}
           tableProps={{
             tableLayout: "fixed",

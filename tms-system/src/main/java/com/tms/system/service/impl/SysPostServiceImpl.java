@@ -21,16 +21,25 @@ public class SysPostServiceImpl implements ISysPostService {
     @Autowired
     private SysPostMapper postMapper;
 
+    /**
+     * 查询岗位列表
+     */
     @Override
     public List<SysPostVo> selectPostList(SysPostQuery query) {
         return postMapper.selectPostList(query == null ? new SysPostQuery() : query);
     }
 
+    /**
+     * 根据ID查询岗位
+     */
     @Override
     public SysPostVo selectPostById(Long postId) {
         return postMapper.selectPostById(postId);
     }
 
+    /**
+     * 校验岗位名称唯一
+     */
     @Override
     public boolean checkPostNameUnique(SysPostSaveReq post) {
         long postId = StringUtils.isNull(post.getPostId()) ? -1L : post.getPostId();
@@ -41,6 +50,9 @@ public class SysPostServiceImpl implements ISysPostService {
         return UserConstants.UNIQUE;
     }
 
+    /**
+     * 校验岗位编码唯一
+     */
     @Override
     public boolean checkPostCodeUnique(SysPostSaveReq post) {
         long postId = StringUtils.isNull(post.getPostId()) ? -1L : post.getPostId();
@@ -51,6 +63,9 @@ public class SysPostServiceImpl implements ISysPostService {
         return UserConstants.UNIQUE;
     }
 
+    /**
+     * 新增岗位
+     */
     @Override
     public int insertPost(SysPostSaveReq post) {
         if (StringUtils.isEmpty(post.getStatus())) {
@@ -59,13 +74,20 @@ public class SysPostServiceImpl implements ISysPostService {
         return postMapper.insertPost(post);
     }
 
+    /**
+     * 修改岗位
+     */
     @Override
     public int updatePost(SysPostSaveReq post) {
         return postMapper.updatePost(post);
     }
 
+    /**
+     * 删除岗位
+     */
     @Override
     public int deletePostById(Long postId) {
         return postMapper.deletePostById(postId);
     }
 }
+

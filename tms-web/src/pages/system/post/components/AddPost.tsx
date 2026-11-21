@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import InputText from "@/components/InputText"
 import { Form, InputNumber, Radio, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
+import type { PostDetail } from "@/api/modules/post"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import type { FormConfig } from "@/interface"
@@ -21,15 +22,6 @@ type PostFormValues = {
   deptId?: string
   postSort?: number
   status?: string
-  remark?: string
-}
-
-type PostDetail = {
-  postName?: string
-  postCode?: string
-  deptId?: string | number
-  postSort?: number
-  status?: string | number
   remark?: string
 }
 
@@ -149,7 +141,7 @@ export default function AddPost(props: AddPostProps) {
         form.setFieldsValue({ ...initialValues })
         setDeptTree(await loadDeptChildren(0))
         if (!isEdit || !postId) return
-        const data = (await api.getPostDetail({ postId })) as PostDetail
+        const data = await api.getPostDetail({ postId })
         form.setFieldsValue(mapDetailToForm(data))
       } finally {
         setLoading(false)

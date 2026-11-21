@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Form, InputNumber, Loading, Select } from "tdesign-react"
 import api from "@/api"
+import type { CustomerDetail } from "@/api/modules/customer"
 import AreaCascader from "@/components/AreaCascader"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
@@ -46,12 +47,6 @@ type CustomerFormValues = {
   bankAccountName?: string
   bankAccountNo?: string
   remark?: string
-}
-
-type CustomerDetail = CustomerFormValues & {
-  customerId?: number | string
-  region?: string | string[]
-  customerTags?: string | string[]
 }
 
 const initialValues: CustomerFormValues = {
@@ -288,7 +283,7 @@ export default function AddCustomer(props: AddCustomerProps) {
         baseInfoForm.setFieldsValue({ ...initialValues })
         financeForm.setFieldsValue({ ...initialValues })
         if (!isEdit || !customerId) return
-        const data = (await api.getCustomerDetail(customerId)) as CustomerDetail
+        const data = await api.getCustomerDetail(customerId)
         const formValues = mapDetailToForm(data)
         baseInfoForm.setFieldsValue(formValues)
         contactForm.setFieldsValue(formValues)

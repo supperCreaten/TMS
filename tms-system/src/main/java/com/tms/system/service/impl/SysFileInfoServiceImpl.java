@@ -20,6 +20,9 @@ public class SysFileInfoServiceImpl implements ISysFileInfoService {
     @Autowired
     private SysFileInfoMapper fileInfoMapper;
 
+    /**
+     * 保存上传文件
+     */
     @Override
     public SysFileInfo saveUploadFile(MultipartFile file, String storedPath, String url) {
         SysFileInfo info = new SysFileInfo();
@@ -34,8 +37,12 @@ public class SysFileInfoServiceImpl implements ISysFileInfoService {
         return info;
     }
 
+    /**
+     * 根据ID查询文件
+     */
     @Override
     public SysFileInfo selectFileById(Long fileId) {
         return fileInfoMapper.selectFileById(fileId);
     }
 }
+

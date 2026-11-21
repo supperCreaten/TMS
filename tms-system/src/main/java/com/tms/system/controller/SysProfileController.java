@@ -94,6 +94,9 @@ public class SysProfileController extends BaseController
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE, bizId = "#loginUserId",
             excludeParamNames = { "oldPassword", "newPassword" })
+    /**
+     * 修改Pwd
+     */
     @Operation(summary = "修改个人信息")
     @PutMapping("/updatePwd")
     public AjaxResult updatePwd(@RequestBody Map<String, String> params)
@@ -154,3 +157,4 @@ public class SysProfileController extends BaseController
         return error("上传图片异常，请联系管理员");
     }
 }
+

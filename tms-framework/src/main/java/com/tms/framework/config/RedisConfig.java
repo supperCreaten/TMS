@@ -19,6 +19,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport
 {
+    /**
+     * 配置 RedisTemplate，key 为字符串、value 为 FastJson
+     */
     @Bean
     @SuppressWarnings(value = { "unchecked", "rawtypes" })
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory)
@@ -40,6 +43,9 @@ public class RedisConfig extends CachingConfigurerSupport
         return template;
     }
 
+    /**
+     * Redis 限流 Lua 脚本
+     */
     @Bean
     public DefaultRedisScript<Long> limitScript()
     {

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Form, InputNumber, Radio, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
+import type { DeptDetail } from "@/api/modules/dept"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import type { FormConfig } from "@/interface"
@@ -23,16 +24,6 @@ type DeptFormValues = {
   phone?: string
   email?: string
   status?: string
-}
-
-type DeptDetail = {
-  parentId?: string | number
-  deptName?: string
-  orderNum?: number
-  leader?: string
-  phone?: string
-  email?: string
-  status?: string | number
 }
 
 const STATUS_OPTIONS = [
@@ -174,7 +165,7 @@ export default function AddDept(props: AddDeptProps) {
           form.setFieldsValue({ parentId })
         }
         if (!isEdit || !deptId) return
-        const data = (await api.getDeptDetail({ deptId })) as DeptDetail
+        const data = await api.getDeptDetail({ deptId })
         form.setFieldsValue(mapDetailToForm(data))
       } finally {
         setLoading(false)

@@ -24,21 +24,33 @@ import com.tms.system.domain.vo.TmsCarrierVo;
 import com.tms.system.mapper.TmsCarrierMapper;
 import com.tms.system.service.ITmsCarrierService;
 
+/**
+ * 承运商 业务层处理
+ */
 @Service
 public class TmsCarrierServiceImpl implements ITmsCarrierService {
     @Autowired
     private TmsCarrierMapper carrierMapper;
 
+    /**
+     * 查询承运商列表
+     */
     @Override
     public List<TmsCarrierVo> selectCarrierList(TmsCarrierQuery query) {
         return carrierMapper.selectCarrierList(query == null ? new TmsCarrierQuery() : query);
     }
 
+    /**
+     * 根据ID查询承运商
+     */
     @Override
     public TmsCarrierVo selectCarrierById(Long carrierId) {
         return carrierMapper.selectCarrierById(carrierId);
     }
 
+    /**
+     * 校验承运商名称唯一
+     */
     @Override
     public boolean checkCarrierNameUnique(TmsCarrierSaveReq req) {
         long id = req.getCarrierId() == null ? -1L : req.getCarrierId();
@@ -46,6 +58,9 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
         return info == null || info.getCarrierId().longValue() == id;
     }
 
+    /**
+     * 新增承运商
+     */
     @Override
     public int insertCarrier(TmsCarrierSaveReq req) {
         if (StringUtils.isEmpty(req.getStatus())) {
@@ -58,11 +73,17 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
         return carrierMapper.insertCarrier(req);
     }
 
+    /**
+     * 修改承运商
+     */
     @Override
     public int updateCarrier(TmsCarrierSaveReq req) {
         return carrierMapper.updateCarrier(req);
     }
 
+    /**
+     * 批量删除承运商
+     */
     @Override
     public int deleteCarrierByIds(Long[] carrierIds) {
         if (carrierIds == null || carrierIds.length == 0) {
@@ -73,6 +94,9 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    /**
+     * 导入承运商
+     */
     public ExcelImportCommitResult importCarrier(MultipartFile file, boolean partialCommit, String operName) {
         if (file == null || file.isEmpty()) {
             throw new ServiceException("导入文件不能为空");
@@ -213,3 +237,4 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
         return req;
     }
 }
+

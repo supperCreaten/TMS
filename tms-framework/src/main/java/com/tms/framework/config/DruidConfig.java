@@ -32,6 +32,9 @@ import jakarta.servlet.ServletResponse;
 @Configuration
 public class DruidConfig
 {
+    /**
+     * 主库数据源
+     */
     @Bean
     @ConfigurationProperties("spring.datasource.druid.master")
     public DataSource masterDataSource(DruidProperties druidProperties)
@@ -40,6 +43,9 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
+    /**
+     * 从库数据源
+     */
     @Bean
     @ConfigurationProperties("spring.datasource.druid.slave")
     @ConditionalOnProperty(prefix = "spring.datasource.druid.slave", name = "enabled", havingValue = "true")
@@ -49,6 +55,9 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
+    /**
+     * 动态数据源路由
+     */
     @Bean(name = "dynamicDataSource")
     @Primary
     public DynamicDataSource dataSource(DataSource masterDataSource)

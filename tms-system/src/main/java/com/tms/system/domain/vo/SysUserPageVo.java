@@ -31,6 +31,12 @@ public class SysUserPageVo extends SysUser
 {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 由用户实体构建分页出参（脱敏）
+     *
+     * @param user 用户实体
+     * @return 分页出参
+     */
     public static SysUserPageVo from(SysUser user)
     {
         SysUserPageVo vo = new SysUserPageVo();
@@ -51,3 +57,4 @@ public class SysUserPageVo extends SysUser
         return vo;
     }
 }
+

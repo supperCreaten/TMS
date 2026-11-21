@@ -31,10 +31,12 @@ public enum OrderStatus {
         this.info = info;
     }
 
+    /** 状态码 */
     public String getCode() {
         return code;
     }
 
+    /** 状态中文 */
     public String getInfo() {
         return info;
     }

@@ -83,6 +83,9 @@ public class SysIndexController {
     @Resource(name = "captchaProducerMath")
     private Producer captchaProducerMath;
 
+    /**
+     * 刷新令牌
+     */
     @Operation(summary = "刷新 accessToken")
     @GetMapping("/refreshToken")
     public AjaxResult refreshToken(HttpServletRequest request) {
@@ -90,6 +93,9 @@ public class SysIndexController {
         return AjaxResult.success("操作成功", tokenService.refreshAccessToken(refreshToken));
     }
 
+    /**
+     * 获取授权路由
+     */
     @Operation(summary = "获取授权路由")
     @GetMapping("/authRoutes")
     public AjaxResult authRoutes() {
@@ -355,3 +361,4 @@ public class SysIndexController {
                 + texts + "</svg>";
     }
 }
+

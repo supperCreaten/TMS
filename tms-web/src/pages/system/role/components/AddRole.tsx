@@ -110,9 +110,7 @@ export default function AddRole(props: AddRoleProps) {
   const loadMenuConfig = useCallback(async () => {
     if (!roleId) return
     try {
-      const res = (await api.getMenuConfig({ roleId })) as {
-        checkedKeys?: Array<string | number>
-      }
+      const res = await api.getMenuConfig({ roleId })
       dispatch({ selectedMenuKeys: (res?.checkedKeys ?? []).map((id) => String(id)) })
     } catch {
       dispatch({ selectedMenuKeys: [] })
@@ -128,7 +126,7 @@ export default function AddRole(props: AddRoleProps) {
         form.reset()
         form.setFieldsValue({ status: true, roleSort: 0 })
         if (!isEdit || !roleId) return
-        const data = (await api.getRoleDetail({ roleId })) as Record<string, unknown>
+        const data = await api.getRoleDetail({ roleId })
         form.setFieldsValue({
           roleCode: data.roleCode,
           roleKey: data.roleKey,

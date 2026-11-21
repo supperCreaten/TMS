@@ -133,11 +133,17 @@ public class TmsOrderVo {
         return RegionCodes.toList(destinationProvince, destinationCity, destinationDistrict);
     }
 
+    /**
+     * 设置订单状态并同步中文文案
+     */
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
         this.orderStatusText = OrderStatus.getInfoByCode(orderStatus);
     }
 
+    /**
+     * 订单状态中文（优先缓存值）
+     */
     public String getOrderStatusText() {
         if (orderStatusText != null && !orderStatusText.isEmpty()) {
             return orderStatusText;

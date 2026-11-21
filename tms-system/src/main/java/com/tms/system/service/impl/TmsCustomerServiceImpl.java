@@ -32,16 +32,25 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
     @Autowired
     private TmsCustomerMapper customerMapper;
 
+    /**
+     * 查询客户列表
+     */
     @Override
     public List<TmsCustomerVo> selectCustomerList(TmsCustomerQuery query) {
         return customerMapper.selectCustomerList(query == null ? new TmsCustomerQuery() : query);
     }
 
+    /**
+     * 根据ID查询客户
+     */
     @Override
     public TmsCustomerVo selectCustomerById(Long customerId) {
         return customerMapper.selectCustomerById(customerId);
     }
 
+    /**
+     * 校验客户名称唯一
+     */
     @Override
     public boolean checkCustomerNameUnique(TmsCustomerSaveReq customer) {
         long id = customer.getCustomerId() == null ? -1L : customer.getCustomerId();
@@ -49,6 +58,9 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
         return info == null || info.getCustomerId().longValue() == id;
     }
 
+    /**
+     * 新增客户
+     */
     @Override
     public int insertCustomer(TmsCustomerSaveReq customer) {
         if (StringUtils.isEmpty(customer.getStatus())) {
@@ -58,11 +70,17 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
         return customerMapper.insertCustomer(customer);
     }
 
+    /**
+     * 修改客户
+     */
     @Override
     public int updateCustomer(TmsCustomerSaveReq customer) {
         return customerMapper.updateCustomer(customer);
     }
 
+    /**
+     * 批量删除客户
+     */
     @Override
     public int deleteCustomerByIds(Long[] customerIds) {
         if (customerIds == null || customerIds.length == 0) {
@@ -73,6 +91,9 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    /**
+     * 导入客户
+     */
     public ExcelImportCommitResult importCustomer(MultipartFile file, boolean partialCommit, String operName) {
         if (file == null || file.isEmpty()) {
             throw new ServiceException("导入文件不能为空");
@@ -210,3 +231,4 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
         return req;
     }
 }
+

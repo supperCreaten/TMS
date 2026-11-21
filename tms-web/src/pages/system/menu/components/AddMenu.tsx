@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Form, InputNumber, Radio, Select, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
+import type { MenuDetail } from "@/api/modules/menu"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import { createIconList } from "@/icons"
@@ -44,22 +45,6 @@ type MenuFormValues = {
   keepAlive?: string
   hidden?: string
   status?: string
-}
-
-type MenuDetail = {
-  parentId?: string | number
-  menuType?: number
-  icon?: string
-  menuName?: string
-  orderNum?: number
-  path?: string
-  perms?: string
-  isFrame?: string | number
-  visible?: string | number
-  hidden?: string | number
-  status?: string | number
-  isCache?: string | number
-  keepAlive?: string | number
 }
 
 const ICON_OPTIONS = createIconList().map((item) => ({
@@ -289,7 +274,7 @@ export default function AddMenu(props: AddMenuProps) {
           form.setFieldsValue({ parentId: menuId })
         }
         if (!isEdit || !menuId) return
-        const data = (await api.getMenuDetail({ menuId })) as MenuDetail
+        const data = await api.getMenuDetail({ menuId })
         form.setFieldsValue(mapDetailToForm(data))
       } finally {
         setLoading(false)

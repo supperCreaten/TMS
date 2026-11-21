@@ -246,6 +246,9 @@ public class TokenService implements ITokenService
         return CacheConstants.ACCESS_TOKEN_KEY + uuid;
     }
 
+    /**
+     * 创建 refreshToken 并写入 HttpOnly Cookie
+     */
     @Override
     public String createRefreshToken(LoginUser loginUser, HttpServletResponse response)
     {
@@ -273,6 +276,9 @@ public class TokenService implements ITokenService
         return refreshToken;
     }
 
+    /**
+     * 使用 refreshToken 换取新的 accessToken
+     */
     @Override
     public String refreshAccessToken(String refreshToken)
     {
@@ -344,6 +350,9 @@ public class TokenService implements ITokenService
         redisCache.setCacheObject(refreshKey, session, ttlSeconds, TimeUnit.SECONDS);
     }
 
+    /**
+     * 注销时清除 refresh 会话及 Cookie
+     */
     @Override
     public void clearRefreshToken(String account, String refreshToken, HttpServletResponse response)
     {

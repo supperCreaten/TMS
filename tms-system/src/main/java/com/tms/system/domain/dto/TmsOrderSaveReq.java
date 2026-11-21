@@ -119,11 +119,13 @@ public class TmsOrderSaveReq extends BaseEntity {
         this.destinationDistrict = RegionCodes.at(codes, 2);
     }
 
+    /** 始发地编码数组（供序列化/内部使用，不落库） */
     @JsonIgnore
     public List<String> getOrigin() {
         return RegionCodes.toList(originProvince, originCity, originDistrict);
     }
 
+    /** 目的地编码数组（供序列化/内部使用，不落库） */
     @JsonIgnore
     public List<String> getDestination() {
         return RegionCodes.toList(destinationProvince, destinationCity, destinationDistrict);

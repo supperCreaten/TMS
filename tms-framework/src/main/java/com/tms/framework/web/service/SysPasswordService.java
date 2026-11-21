@@ -41,6 +41,9 @@ public class SysPasswordService
         return CacheConstants.PWD_ERR_CNT_KEY + username;
     }
 
+    /**
+     * 校验密码并累计错误次数
+     */
     public void validate(SysUser user)
     {
         Authentication usernamePasswordAuthenticationToken = AuthenticationContextHolder.getContext();
@@ -71,11 +74,17 @@ public class SysPasswordService
         }
     }
 
+    /**
+     * 比对明文密码与库中密文
+     */
     public boolean matches(SysUser user, String rawPassword)
     {
         return SecurityUtils.matchesPassword(rawPassword, user.getPassword());
     }
 
+    /**
+     * 清除密码错误次数缓存
+     */
     public void clearLoginRecordCache(String loginName)
     {
         if (redisCache.hasKey(getCacheKey(loginName)))

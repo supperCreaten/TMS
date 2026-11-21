@@ -150,6 +150,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
         return UserConstants.UNIQUE;
     }
 
+    /**
+     * 校验角色编码唯一
+     */
     @Override
     public boolean checkRoleCodeUnique(SysRole role) {
         Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();
@@ -349,3 +352,4 @@ public class SysRoleServiceImpl implements ISysRoleService {
         return userRoleMapper.batchUserRole(list);
     }
 }
+

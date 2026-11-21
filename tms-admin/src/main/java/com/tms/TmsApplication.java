@@ -12,6 +12,11 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class TmsApplication
 {
+    /**
+     * 应用入口
+     *
+     * @param args 启动参数
+     */
     public static void main(String[] args)
     {
         // System.setProperty("spring.devtools.restart.enabled", "false");

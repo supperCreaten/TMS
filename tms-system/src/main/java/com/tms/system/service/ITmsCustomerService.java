@@ -11,16 +11,52 @@ import com.tms.system.domain.vo.TmsCustomerVo;
  * 客户 服务层
  */
 public interface ITmsCustomerService {
+    /**
+     * 查询客户列表
+     *
+     * @param query 查询条件
+     * @return 客户列表
+     */
     List<TmsCustomerVo> selectCustomerList(TmsCustomerQuery query);
 
+    /**
+     * 按主键查询客户
+     *
+     * @param customerId 客户ID
+     * @return 客户信息
+     */
     TmsCustomerVo selectCustomerById(Long customerId);
 
+    /**
+     * 校验客户名称是否唯一
+     *
+     * @param customer 客户参数
+     * @return true=唯一
+     */
     boolean checkCustomerNameUnique(TmsCustomerSaveReq customer);
 
+    /**
+     * 新增客户
+     *
+     * @param customer 客户参数
+     * @return 影响行数
+     */
     int insertCustomer(TmsCustomerSaveReq customer);
 
+    /**
+     * 修改客户
+     *
+     * @param customer 客户参数
+     * @return 影响行数
+     */
     int updateCustomer(TmsCustomerSaveReq customer);
 
+    /**
+     * 批量删除客户
+     *
+     * @param customerIds 客户ID数组
+     * @return 影响行数
+     */
     int deleteCustomerByIds(Long[] customerIds);
 
     /**

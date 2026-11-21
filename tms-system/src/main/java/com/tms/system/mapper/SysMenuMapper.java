@@ -19,6 +19,9 @@ public interface SysMenuMapper {
      */
     public List<SysMenu> selectMenuList(SysMenu menu);
 
+    /**
+     * 查询全部菜单（含按钮）
+     */
     public List<SysMenu> selectMenuAllList();
 
     /**
@@ -141,3 +144,4 @@ public interface SysMenuMapper {
      */
     public List<SysMenu> selectMenusByPathOrRouteName(@Param("path") String path, @Param("routeName") String routeName);
 }
+

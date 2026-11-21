@@ -4,6 +4,9 @@ import com.tms.system.domain.dto.SysDictDataSaveReq;
 
 import java.util.List;
 
+/**
+ * 字典数据 业务层
+ */
 public interface SysDictDataService {
     /**
      * 新增保存菜单信息

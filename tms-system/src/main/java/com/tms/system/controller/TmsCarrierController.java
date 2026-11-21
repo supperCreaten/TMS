@@ -26,6 +26,9 @@ import com.tms.system.domain.dto.TmsCarrierSaveReq;
 import com.tms.system.domain.vo.TmsCarrierVo;
 import com.tms.system.service.ITmsCarrierService;
 
+/**
+ * 承运商管理
+ */
 @RestController
 @Tag(name = "承运商管理")
 @RequestMapping("/carrier")
@@ -33,6 +36,9 @@ public class TmsCarrierController extends BaseController {
     @Autowired
     private ITmsCarrierService carrierService;
 
+    /**
+     * 承运商分页列表
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:list')")
     @Operation(summary = "承运商分页列表")
     @PostMapping("/pageQuery")
@@ -43,6 +49,9 @@ public class TmsCarrierController extends BaseController {
         return getDataTable(list, pageInfo);
     }
 
+    /**
+     * 新增承运商
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:edit')")
     @Log(title = "承运商管理", businessType = BusinessType.INSERT)
     @Operation(summary = "新增承运商")
@@ -54,6 +63,9 @@ public class TmsCarrierController extends BaseController {
         return toAjax(carrierService.insertCarrier(req));
     }
 
+    /**
+     * 修改承运商
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:edit')")
     @Log(title = "承运商管理", businessType = BusinessType.UPDATE, bizId = "#req.carrierId")
     @Operation(summary = "修改承运商")
@@ -68,6 +80,9 @@ public class TmsCarrierController extends BaseController {
         return toAjax(carrierService.updateCarrier(req));
     }
 
+    /**
+     * 承运商详情
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:query')")
     @Operation(summary = "承运商详情")
     @PostMapping("/queryById/{id}")
@@ -75,6 +90,9 @@ public class TmsCarrierController extends BaseController {
         return success(carrierService.selectCarrierById(id));
     }
 
+    /**
+     * 删除承运商
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:remove')")
     @Log(title = "承运商管理", businessType = BusinessType.DELETE)
     @Operation(summary = "删除承运商")
@@ -83,6 +101,9 @@ public class TmsCarrierController extends BaseController {
         return toAjax(carrierService.deleteCarrierByIds(ids));
     }
 
+    /**
+     * 导出承运商
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:export')")
     @Log(title = "承运商管理", businessType = BusinessType.EXPORT)
     @Operation(summary = "导出承运商")
@@ -93,6 +114,9 @@ public class TmsCarrierController extends BaseController {
         util.exportExcel(response, list, "承运商数据");
     }
 
+    /**
+     * 下载导入模板
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:import')")
     @Operation(summary = "导入模板")
     @PostMapping("/importTemplate")
@@ -101,6 +125,9 @@ public class TmsCarrierController extends BaseController {
         util.importTemplateExcel(response, "承运商数据");
     }
 
+    /**
+     * 导入承运商
+     */
     @PreAuthorize("@ss.hasPermi('resource:carrier:import')")
     @Log(title = "承运商管理", businessType = BusinessType.IMPORT)
     @Operation(summary = "导入承运商")

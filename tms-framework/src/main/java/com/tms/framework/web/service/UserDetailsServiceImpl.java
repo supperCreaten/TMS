@@ -35,6 +35,9 @@ public class UserDetailsServiceImpl implements UserDetailsService
     @Autowired
     private SysPermissionService permissionService;
 
+    /**
+     * 按用户名加载登录用户并校验密码
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
@@ -60,6 +63,9 @@ public class UserDetailsServiceImpl implements UserDetailsService
         return createLoginUser(user);
     }
 
+    /**
+     * 组装带菜单权限的 LoginUser
+     */
     public UserDetails createLoginUser(SysUser user)
     {
         return new LoginUser(user.getUserId(), user, permissionService.getMenuPermission(user));

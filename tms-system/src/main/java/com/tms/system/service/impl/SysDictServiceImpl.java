@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 字典类型 业务层处理
+ */
 @Service
 public class SysDictServiceImpl implements SysDictService {
     @Autowired
@@ -36,6 +39,9 @@ public class SysDictServiceImpl implements SysDictService {
         }
     }
 
+    /**
+     * 查询字典类型列表
+     */
     @Override
     public List<SysDictSaveReq> selectDictList(SysDictQuery query) {
         SysDictSaveReq dict = new SysDictSaveReq();
@@ -47,6 +53,9 @@ public class SysDictServiceImpl implements SysDictService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    /**
+     * 新增字典类型
+     */
     public void insertDict(SysDictSaveReq req) {
         selectDictByCode(req);
         dictMapper.insertDict(req);
@@ -63,6 +72,9 @@ public class SysDictServiceImpl implements SysDictService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    /**
+     * 修改字典类型
+     */
     public void updateDict(SysDictSaveReq req) {
         if (req.getDictId() == null) {
             throw new IllegalArgumentException("主键id不能为空");
@@ -76,6 +88,9 @@ public class SysDictServiceImpl implements SysDictService {
         dictData.forEach(dictDataMapper::updateDictData);
     }
 
+    /**
+     * 根据ID查询字典类型
+     */
     @Override
     public SysDictSaveReq selectDictByDictId(Long id) {
         SysDictSaveReq dict = dictMapper.selectDictById(id);
@@ -84,6 +99,9 @@ public class SysDictServiceImpl implements SysDictService {
         return dict;
     }
 
+    /**
+     * 按编码查询字典项
+     */
     @Override
     public List<SysDictDataSaveReq> selectDictDataByCode(String dictCode) {
         SysDictSaveReq row = dictMapper.selectDictByCode(dictCode);
@@ -94,6 +112,9 @@ public class SysDictServiceImpl implements SysDictService {
         return dictDataMapper.selectDictDataByDictId(dictId);
     }
 
+    /**
+     * 批量删除字典类型
+     */
     @Override
     public void deleteDictById(List<Long> ids) {
         for (Long id : ids) {
@@ -102,3 +123,4 @@ public class SysDictServiceImpl implements SysDictService {
         }
     }
 }
+

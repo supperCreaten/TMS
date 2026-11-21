@@ -1,32 +1,26 @@
 package com.tms.system.controller;
 
-import java.util.List;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import com.github.pagehelper.PageInfo;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import com.tms.common.annotation.Log;
 import com.tms.common.core.controller.BaseController;
 import com.tms.common.core.domain.AjaxResult;
 import com.tms.common.enums.BusinessType;
 import com.tms.common.utils.poi.ExcelImportCommitResult;
 import com.tms.common.utils.poi.ExcelUtil;
-import com.tms.system.domain.TmsCustomer;
-import com.tms.system.domain.convert.TmsCustomerConvert;
 import com.tms.system.domain.dto.TmsCustomerQuery;
 import com.tms.system.domain.dto.TmsCustomerSaveReq;
 import com.tms.system.domain.vo.TmsCustomerVo;
 import com.tms.system.service.ITmsCustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 客户管理（对齐 /api/customer）
@@ -43,9 +37,16 @@ public class TmsCustomerController extends BaseController {
     @PostMapping("/pageQuery")
     public AjaxResult pageQuery(@RequestBody(required = false) TmsCustomerQuery query) {
         startPage();
-        List<TmsCustomer> list = customerService.selectCustomerList(TmsCustomerConvert.toEntity(query));
-        PageInfo<TmsCustomer> pageInfo = new PageInfo<>(list);
-        return getDataTable(TmsCustomerConvert.toVoList(list), pageInfo);
+        List<TmsCustomerVo> list = customerService.selectCustomerList(query);
+        PageInfo<TmsCustomerVo> pageInfo = new PageInfo<>(list);
+        return getDataTable(list, pageInfo);
+    }
+
+    @PreAuthorize("@ss.hasPermi('resource:customer:list')")
+    @Operation(summary = "客户全量列表")
+    @PostMapping("/allQuery")
+    public AjaxResult allQuery() {
+        return success(customerService.selectCustomerList(new TmsCustomerQuery()));
     }
 
     @PreAuthorize("@ss.hasPermi('resource:customer:edit')")
@@ -53,11 +54,10 @@ public class TmsCustomerController extends BaseController {
     @Operation(summary = "新增客户")
     @PostMapping("/insert")
     public AjaxResult insert(@Validated @RequestBody TmsCustomerSaveReq req) {
-        TmsCustomer customer = TmsCustomerConvert.toEntity(req);
-        if (!customerService.checkCustomerNameUnique(customer)) {
-            return error("新增客户'" + customer.getCustomerName() + "'失败，客户名称已存在");
+        if (!customerService.checkCustomerNameUnique(req)) {
+            return error("新增客户'" + req.getCustomerName() + "'失败，客户名称已存在");
         }
-        return toAjax(customerService.insertCustomer(customer));
+        return toAjax(customerService.insertCustomer(req));
     }
 
     @PreAuthorize("@ss.hasPermi('resource:customer:edit')")
@@ -68,18 +68,17 @@ public class TmsCustomerController extends BaseController {
         if (req.getCustomerId() == null) {
             return error("客户ID不能为空");
         }
-        TmsCustomer customer = TmsCustomerConvert.toEntity(req);
-        if (!customerService.checkCustomerNameUnique(customer)) {
-            return error("修改客户'" + customer.getCustomerName() + "'失败，客户名称已存在");
+        if (!customerService.checkCustomerNameUnique(req)) {
+            return error("修改客户'" + req.getCustomerName() + "'失败，客户名称已存在");
         }
-        return toAjax(customerService.updateCustomer(customer));
+        return toAjax(customerService.updateCustomer(req));
     }
 
     @PreAuthorize("@ss.hasPermi('resource:customer:query')")
     @Operation(summary = "客户详情")
     @PostMapping("/queryById/{id}")
     public AjaxResult queryById(@PathVariable("id") Long id) {
-        return success(TmsCustomerConvert.toVo(customerService.selectCustomerById(id)));
+        return success(customerService.selectCustomerById(id));
     }
 
     @PreAuthorize("@ss.hasPermi('resource:customer:remove')")
@@ -95,9 +94,9 @@ public class TmsCustomerController extends BaseController {
     @Operation(summary = "导出客户")
     @PostMapping("/export")
     public void export(HttpServletResponse response, @RequestBody(required = false) TmsCustomerQuery query) {
-        List<TmsCustomer> list = customerService.selectCustomerList(TmsCustomerConvert.toEntity(query));
+        List<TmsCustomerVo> list = customerService.selectCustomerList(query);
         ExcelUtil<TmsCustomerVo> util = new ExcelUtil<>(TmsCustomerVo.class);
-        util.exportExcel(response, TmsCustomerConvert.toVoList(list), "客户数据");
+        util.exportExcel(response, list, "客户数据");
     }
 
     @PreAuthorize("@ss.hasPermi('resource:customer:import')")

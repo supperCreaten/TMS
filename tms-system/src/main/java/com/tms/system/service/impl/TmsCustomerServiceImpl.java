@@ -18,8 +18,8 @@ import com.tms.common.utils.StringUtils;
 import com.tms.common.utils.poi.ExcelImportCommitResult;
 import com.tms.common.utils.poi.ExcelImportHelper;
 import com.tms.common.utils.poi.ExcelUtil;
-import com.tms.system.domain.TmsCustomer;
-import com.tms.system.domain.convert.TmsCustomerConvert;
+import com.tms.system.domain.dto.TmsCustomerQuery;
+import com.tms.system.domain.dto.TmsCustomerSaveReq;
 import com.tms.system.domain.vo.TmsCustomerVo;
 import com.tms.system.mapper.TmsCustomerMapper;
 import com.tms.system.service.ITmsCustomerService;
@@ -33,24 +33,24 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
     private TmsCustomerMapper customerMapper;
 
     @Override
-    public List<TmsCustomer> selectCustomerList(TmsCustomer query) {
-        return customerMapper.selectCustomerList(query == null ? new TmsCustomer() : query);
+    public List<TmsCustomerVo> selectCustomerList(TmsCustomerQuery query) {
+        return customerMapper.selectCustomerList(query == null ? new TmsCustomerQuery() : query);
     }
 
     @Override
-    public TmsCustomer selectCustomerById(Long customerId) {
+    public TmsCustomerVo selectCustomerById(Long customerId) {
         return customerMapper.selectCustomerById(customerId);
     }
 
     @Override
-    public boolean checkCustomerNameUnique(TmsCustomer customer) {
+    public boolean checkCustomerNameUnique(TmsCustomerSaveReq customer) {
         long id = customer.getCustomerId() == null ? -1L : customer.getCustomerId();
-        TmsCustomer info = customerMapper.checkCustomerNameUnique(customer.getCustomerName());
+        TmsCustomerVo info = customerMapper.checkCustomerNameUnique(customer.getCustomerName());
         return info == null || info.getCustomerId().longValue() == id;
     }
 
     @Override
-    public int insertCustomer(TmsCustomer customer) {
+    public int insertCustomer(TmsCustomerSaveReq customer) {
         if (StringUtils.isEmpty(customer.getStatus())) {
             customer.setStatus("0");
         }
@@ -59,7 +59,7 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
     }
 
     @Override
-    public int updateCustomer(TmsCustomer customer) {
+    public int updateCustomer(TmsCustomerSaveReq customer) {
         return customerMapper.updateCustomer(customer);
     }
 
@@ -86,7 +86,7 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
             }
 
             Map<Integer, String> errors = new LinkedHashMap<>();
-            List<TmsCustomer> toInsert = new ArrayList<>();
+            List<TmsCustomerSaveReq> toInsert = new ArrayList<>();
             Set<String> pendingNames = new HashSet<>();
             for (int i = 0; i < vos.size(); i++) {
                 int sheetRow = i + 1;
@@ -96,24 +96,24 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
                 if (StringUtils.isNotEmpty(validateMsg)) {
                     messages.add(validateMsg);
                 }
-                TmsCustomer entity = TmsCustomerConvert.fromImportVo(vo);
-                if (StringUtils.isEmpty(entity.getCustomerLevel())) {
-                    entity.setCustomerLevel("normal");
+                TmsCustomerSaveReq req = fromImportVo(vo);
+                if (StringUtils.isEmpty(req.getCustomerLevel())) {
+                    req.setCustomerLevel("normal");
                 }
-                if (StringUtils.isEmpty(entity.getStatus())) {
-                    entity.setStatus("0");
+                if (StringUtils.isEmpty(req.getStatus())) {
+                    req.setStatus("0");
                 }
-                if (StringUtils.isEmpty(entity.getSettleType())) {
-                    entity.setSettleType("monthly");
+                if (StringUtils.isEmpty(req.getSettleType())) {
+                    req.setSettleType("monthly");
                 }
-                if (StringUtils.isEmpty(entity.getInvoiceTitle()) && StringUtils.isNotEmpty(entity.getCustomerName())) {
-                    entity.setInvoiceTitle(entity.getCustomerName());
+                if (StringUtils.isEmpty(req.getInvoiceTitle()) && StringUtils.isNotEmpty(req.getCustomerName())) {
+                    req.setInvoiceTitle(req.getCustomerName());
                 }
-                String customerName = entity.getCustomerName();
+                String customerName = req.getCustomerName();
                 if (StringUtils.isNotEmpty(customerName)) {
                     if (pendingNames.contains(customerName)) {
                         messages.add("导入文件中客户名称重复");
-                    } else if (!checkCustomerNameUnique(entity)) {
+                    } else if (!checkCustomerNameUnique(req)) {
                         messages.add("客户「" + customerName + "」已存在");
                     }
                 }
@@ -122,9 +122,9 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
                     continue;
                 }
                 pendingNames.add(customerName);
-                entity.setCreateBy(operName);
-                entity.setUpdateBy(operName);
-                toInsert.add(entity);
+                req.setCreateBy(operName);
+                req.setUpdateBy(operName);
+                toInsert.add(req);
             }
 
             ExcelImportCommitResult result = buildImportResult(vos.size(), errors, fileBytes, file.getOriginalFilename());
@@ -133,7 +133,7 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
                 result.setMessage("校验未全部通过，未入库。失败 " + errors.size() + " 条，请下载错误日志");
                 return result;
             }
-            for (TmsCustomer item : toInsert) {
+            for (TmsCustomerSaveReq item : toInsert) {
                 insertCustomer(item);
             }
             result.setSuccessCount(toInsert.size());
@@ -185,5 +185,28 @@ public class TmsCustomerServiceImpl implements ITmsCustomerService {
             }
         }
         return prefix + String.format("%04d", seq);
+    }
+
+    /** Excel 导入行 → SaveReq */
+    private static TmsCustomerSaveReq fromImportVo(TmsCustomerVo vo) {
+        TmsCustomerSaveReq req = new TmsCustomerSaveReq();
+        if (vo == null) {
+            return req;
+        }
+        req.setCustomerName(vo.getCustomerName());
+        req.setShortName(vo.getShortName());
+        req.setIndustry(vo.getIndustry());
+        req.setCustomerLevel(vo.getCustomerLevel());
+        req.setStatus(vo.getStatus());
+        req.setCustomerSource(vo.getCustomerSource());
+        req.setSalesUserName(vo.getSalesUserName());
+        req.setContactName(vo.getContactName());
+        req.setContactPhone(vo.getContactPhone());
+        req.setSettleType(vo.getSettleType());
+        req.setCreditLimit(vo.getCreditLimit());
+        req.setPayPeriodDays(vo.getPayPeriodDays());
+        req.setInvoiceTitle(vo.getInvoiceTitle());
+        req.setTaxNo(vo.getTaxNo());
+        return req;
     }
 }

@@ -3,18 +3,20 @@ package com.tms.system.service;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import com.tms.common.utils.poi.ExcelImportCommitResult;
-import com.tms.system.domain.TmsCarrier;
+import com.tms.system.domain.dto.TmsCarrierQuery;
+import com.tms.system.domain.dto.TmsCarrierSaveReq;
+import com.tms.system.domain.vo.TmsCarrierVo;
 
 public interface ITmsCarrierService {
-    List<TmsCarrier> selectCarrierList(TmsCarrier query);
+    List<TmsCarrierVo> selectCarrierList(TmsCarrierQuery query);
 
-    TmsCarrier selectCarrierById(Long carrierId);
+    TmsCarrierVo selectCarrierById(Long carrierId);
 
-    boolean checkCarrierNameUnique(TmsCarrier carrier);
+    boolean checkCarrierNameUnique(TmsCarrierSaveReq req);
 
-    int insertCarrier(TmsCarrier carrier);
+    int insertCarrier(TmsCarrierSaveReq req);
 
-    int updateCarrier(TmsCarrier carrier);
+    int updateCarrier(TmsCarrierSaveReq req);
 
     int deleteCarrierByIds(Long[] carrierIds);
 

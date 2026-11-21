@@ -1,8 +1,9 @@
 package com.tms.system.mapper;
 
 import java.util.List;
-import com.tms.system.domain.TmsOrderCargo;
+import com.tms.system.domain.dto.TmsOrderCargoSaveReq;
 import com.tms.system.domain.vo.TmsOrderCargoVo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 订单货物信息 数据层
@@ -21,10 +22,10 @@ public interface TmsOrderCargoMapper {
     /**
      * 新增货物信息
      *
-     * @param cargo 货物信息
+     * @param tmsOrderCargoSaveReq 货物信息
      * @return 结果
      */
-    int insertCargo(TmsOrderCargo cargo);
+    int insertCargo(TmsOrderCargoSaveReq tmsOrderCargoSaveReq);
 
     /**
      * 批量新增货物信息
@@ -32,7 +33,7 @@ public interface TmsOrderCargoMapper {
      * @param cargoList 货物列表
      * @return 结果
      */
-    int batchInsertCargo(List<TmsOrderCargo> cargoList);
+    int batchInsertCargo(@Param("list") List<TmsOrderCargoSaveReq> cargoList);
 
     /**
      * 修改货物信息
@@ -40,7 +41,15 @@ public interface TmsOrderCargoMapper {
      * @param cargo 货物信息
      * @return 结果
      */
-    int updateCargo(TmsOrderCargo cargo);
+    int updateCargo(TmsOrderCargoSaveReq cargo);
+
+    /**
+     * 批量修改货物信息
+     *
+     * @param cargoList 货物列表
+     * @return 结果
+     */
+    int batchUpdateCargo(@Param("cargoList") List<TmsOrderCargoSaveReq> cargoList);
 
     /**
      * 按订单ID逻辑删除货物

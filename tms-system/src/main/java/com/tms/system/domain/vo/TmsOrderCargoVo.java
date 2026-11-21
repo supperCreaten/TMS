@@ -20,6 +20,9 @@ public class TmsOrderCargoVo {
     /** 货物名称 */
     private String cargoName;
 
+    /** 货物类型 */
+    private String cargoType;
+
     /** 数量 */
     private BigDecimal quantity;
 
@@ -29,15 +32,12 @@ public class TmsOrderCargoVo {
     /** 重量kg */
     private BigDecimal weight;
 
-    /** 车辆类型（前端枚举文案） */
+    /** 车辆类型（字典 tms_vehicle_type） */
     private String vehicleType;
 
-    /** 车辆长度（前端枚举文案） */
+    /** 车辆长度（字典 tms_vehicle_length） */
     private String vehicleLength;
 
     /** 用车数量 */
     private Integer vehicleCount;
-
-    /** 备注 */
-    private String remark;
 }

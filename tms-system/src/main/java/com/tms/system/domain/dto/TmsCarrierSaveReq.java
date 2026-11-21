@@ -2,12 +2,26 @@ package com.tms.system.domain.dto;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tms.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+/**
+ * 承运商新增/修改
+ * <p>审计字段继承自 BaseEntity，由 MyBatis 拦截器自动填充。</p>
+ */
 @Data
-public class TmsCarrierSaveReq {
+@EqualsAndHashCode(callSuper = true)
+public class TmsCarrierSaveReq extends BaseEntity {
+    private static final long serialVersionUID = 1L;
+
     private Long carrierId;
+
+    /** 承运商编号（服务端生成） */
+    @JsonIgnore
+    private String carrierNo;
 
     @NotBlank(message = "承运商名称不能为空")
     private String carrierName;
@@ -63,6 +77,4 @@ public class TmsCarrierSaveReq {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date contractExpireDate;
-
-    private String remark;
 }

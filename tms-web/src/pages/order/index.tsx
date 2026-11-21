@@ -10,12 +10,15 @@ import SearchBox, { SearchBoxRef } from "@/components/SearchBox"
 import MoreActions from "@/components/MoreActions"
 import InputText from "@/components/InputText"
 import { useNavigate } from "react-router-dom"
+import useDict, { getDictLabel } from "@/hooks/use-dict"
+import { ORDER_DICT } from "./constants"
 interface OrderRow {
   orderId: number
   orderNo?: string
   waybillNo?: string
   origin?: string
   destination?: string
+  customerId?: number | string
   customerName?: string
   orderStatus?: string
   orderStatusText?: string
@@ -41,6 +44,10 @@ export default function order() {
   const tableRef = useRef<BasicTableRef<OrderRow>>(null)
   const [selectedKeys, setSelectedKeys] = useState<Array<string | number>>([])
   const navigate = useNavigate()
+  const dict = useDict([ORDER_DICT.cargoType, ORDER_DICT.transportType, ORDER_DICT.orderSource])
+  const cargoTypeOptions = dict[ORDER_DICT.cargoType] ?? []
+  const transportTypeOptions = dict[ORDER_DICT.transportType] ?? []
+  const orderSourceOptions = dict[ORDER_DICT.orderSource] ?? []
   const formConfig = useMemo<FormConfig[]>(
     () => [
       {
@@ -92,8 +99,22 @@ export default function order() {
             "-"
           ),
       },
-      { title: "始发地", colKey: "origin", width: 160, align: "center", ellipsis: true },
-      { title: "目的地", colKey: "destination", width: 160, align: "center", ellipsis: true },
+      {
+        title: "始发地",
+        colKey: "origin",
+        width: 160,
+        align: "center",
+        ellipsis: true,
+        cell: ({ row }) => (Array.isArray(row.origin) ? row.origin.join("/") : row.origin) || "-",
+      },
+      {
+        title: "目的地",
+        colKey: "destination",
+        width: 160,
+        align: "center",
+        ellipsis: true,
+        cell: ({ row }) => (Array.isArray(row.destination) ? row.destination.join("/") : row.destination) || "-",
+      },
       { title: "客户名称", colKey: "customerName", width: 140, align: "center", ellipsis: true },
       {
         title: "订单状态",
@@ -137,12 +158,33 @@ export default function order() {
         align: "center",
         ellipsis: true,
       },
-      { title: "订单类型", colKey: "transportType", width: 100, align: "center", ellipsis: true },
-      { title: "货物类型", colKey: "cargoType", width: 100, align: "center", ellipsis: true },
+      {
+        title: "订单类型",
+        colKey: "transportType",
+        width: 100,
+        align: "center",
+        ellipsis: true,
+        cell: ({ row }) => getDictLabel(transportTypeOptions, row.transportType),
+      },
+      {
+        title: "货物类型",
+        colKey: "cargoType",
+        width: 100,
+        align: "center",
+        ellipsis: true,
+        cell: ({ row }) => getDictLabel(cargoTypeOptions, row.cargoType),
+      },
       { title: "货物数量", colKey: "totalQuantity", width: 100, align: "center" },
       { title: "总重量", colKey: "totalWeight", width: 100, align: "center" },
       { title: "运费合计", colKey: "totalFee", width: 110, align: "center" },
-      { title: "订单来源", colKey: "orderSource", width: 110, align: "center", ellipsis: true },
+      {
+        title: "订单来源",
+        colKey: "orderSource",
+        width: 110,
+        align: "center",
+        ellipsis: true,
+        cell: ({ row }) => getDictLabel(orderSourceOptions, row.orderSource),
+      },
       { title: "订单备注", colKey: "remark", width: 160, align: "center", ellipsis: true },
       { title: "下单时间", colKey: "createTime", width: 170, align: "center", ellipsis: true },
       { title: "创建人", colKey: "createBy", width: 100, align: "center", ellipsis: true },
@@ -165,7 +207,7 @@ export default function order() {
         ),
       },
     ],
-    [],
+    [cargoTypeOptions, transportTypeOptions, orderSourceOptions],
   )
   const handleSearch = () => {
     tableRef.current?.refresh({ resetCurrent: true })

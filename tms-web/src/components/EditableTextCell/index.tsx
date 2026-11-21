@@ -1,9 +1,10 @@
 import InputText, { type InputFilterFn } from "@/components/InputText"
 import { memo, useEffect, useRef, useState } from "react"
 import type { TextareaProps } from "tdesign-react"
-import type { CargoCommitFn } from "./types"
 
-type CargoTextCellProps = {
+export type EditableTextCommitFn = (rowId: string | number, patch: Record<string, string>) => void
+
+export type EditableTextCellProps = {
   rowId: string | number
   field: string
   value?: string
@@ -17,14 +18,14 @@ type CargoTextCellProps = {
   filterSpace?: boolean
   maxlength?: number
   autosize?: TextareaProps["autosize"]
-  onCommit: CargoCommitFn
+  onCommit: EditableTextCommitFn
 }
 
 /**
- * 可编辑文本单元格：输入只用本地 state，失焦（单行还可回车）再写回表格。
+ * 可编辑文本单元格：输入用本地 state，失焦（单行还可回车）再写回表格。
  * 聚焦期间不同步外部 value，避免输入被打断。
  */
-export const CargoTextCell = memo(function CargoTextCell(props: CargoTextCellProps) {
+export const EditableTextCell = memo(function EditableTextCell(props: EditableTextCellProps) {
   const {
     rowId,
     field,
@@ -107,3 +108,5 @@ export const CargoTextCell = memo(function CargoTextCell(props: CargoTextCellPro
     />
   )
 })
+
+export default EditableTextCell

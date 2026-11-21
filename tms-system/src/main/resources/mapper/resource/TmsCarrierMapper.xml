@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tms.system.mapper.TmsCarrierMapper">
 
-	<resultMap type="com.tms.system.domain.TmsCarrier" id="TmsCarrierResult">
+	<resultMap type="com.tms.system.domain.vo.TmsCarrierVo" id="TmsCarrierResult">
 		<id     property="carrierId"           column="carrier_id"            />
 		<result property="carrierNo"           column="carrier_no"            />
 		<result property="carrierName"         column="carrier_name"          />
@@ -37,11 +37,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="contractFileUrl"     column="contract_file_url"     />
 		<result property="contractExpireDate"  column="contract_expire_date"  />
 		<result property="remark"              column="remark"                />
-		<result property="isDel"               column="is_del"                />
 		<result property="createBy"            column="create_by"             />
 		<result property="createTime"          column="create_time"           />
-		<result property="updateBy"            column="update_by"             />
-		<result property="updateTime"          column="update_time"           />
 	</resultMap>
 
 	<sql id="selectCarrierVo">
@@ -55,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from tms_carrier
 	</sql>
 
-	<select id="selectCarrierList" parameterType="com.tms.system.domain.TmsCarrier" resultMap="TmsCarrierResult">
+	<select id="selectCarrierList" parameterType="com.tms.system.domain.dto.TmsCarrierQuery" resultMap="TmsCarrierResult">
 		<include refid="selectCarrierVo"/>
 		where is_del = '0'
 		<if test="contractSigned != null and contractSigned != ''">
@@ -101,7 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select max(carrier_no) from tms_carrier where carrier_no like concat(#{prefix}, '%')
 	</select>
 
-	<insert id="insertCarrier" parameterType="com.tms.system.domain.TmsCarrier" useGeneratedKeys="true" keyProperty="carrierId">
+	<insert id="insertCarrier" parameterType="com.tms.system.domain.dto.TmsCarrierSaveReq" useGeneratedKeys="true" keyProperty="carrierId">
 		insert into tms_carrier(
 			carrier_no, carrier_name,
 			<if test="shortName != null and shortName != ''">short_name,</if>
@@ -163,7 +160,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	</insert>
 
-	<update id="updateCarrier" parameterType="com.tms.system.domain.TmsCarrier">
+	<update id="updateCarrier" parameterType="com.tms.system.domain.dto.TmsCarrierSaveReq">
 		update tms_carrier
 		<set>
 			<if test="carrierName != null and carrierName != ''">carrier_name = #{carrierName},</if>

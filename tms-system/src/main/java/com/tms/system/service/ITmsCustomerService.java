@@ -3,21 +3,23 @@ package com.tms.system.service;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import com.tms.common.utils.poi.ExcelImportCommitResult;
-import com.tms.system.domain.TmsCustomer;
+import com.tms.system.domain.dto.TmsCustomerQuery;
+import com.tms.system.domain.dto.TmsCustomerSaveReq;
+import com.tms.system.domain.vo.TmsCustomerVo;
 
 /**
  * 客户 服务层
  */
 public interface ITmsCustomerService {
-    List<TmsCustomer> selectCustomerList(TmsCustomer query);
+    List<TmsCustomerVo> selectCustomerList(TmsCustomerQuery query);
 
-    TmsCustomer selectCustomerById(Long customerId);
+    TmsCustomerVo selectCustomerById(Long customerId);
 
-    boolean checkCustomerNameUnique(TmsCustomer customer);
+    boolean checkCustomerNameUnique(TmsCustomerSaveReq customer);
 
-    int insertCustomer(TmsCustomer customer);
+    int insertCustomer(TmsCustomerSaveReq customer);
 
-    int updateCustomer(TmsCustomer customer);
+    int updateCustomer(TmsCustomerSaveReq customer);
 
     int deleteCustomerByIds(Long[] customerIds);
 

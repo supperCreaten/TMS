@@ -7,6 +7,10 @@ import request from "@/utils/service"
 export default {
   customerPageQuery: <T extends TableRowData>(data: Record<string, unknown>) =>
     request.post<TablePageResult<T>>("/api/customer/pageQuery", data),
+  /** 全量客户列表（无分页），T 为单条记录类型 */
+  customerAllQuery: <
+    T extends { customerId: string; customerName: string } = { customerId: string ; customerName: string }
+  >() => request.post<T[]>("/api/customer/allQuery", {}),
   insertCustomer: (data: Record<string, unknown>) => request.post("/api/customer/insert", data),
   updateCustomer: (data: Record<string, unknown>) => request.post("/api/customer/update", data),
   getCustomerDetail: (id: string | number) => request.post(`/api/customer/queryById/${id}`),
@@ -16,8 +20,7 @@ export default {
       headers: { "Content-Type": "multipart/form-data" },
       ...config,
     }),
-  downloadCustomerImportTemplate: () =>
-    request.post("/api/customer/importTemplate", {}, { responseType: "blob" }),
+  downloadCustomerImportTemplate: () => request.post("/api/customer/importTemplate", {}, { responseType: "blob" }),
   exportCustomer: (data: Record<string, unknown>) =>
     request.post("/api/customer/export", data, { responseType: "blob" }),
 }

@@ -1,21 +1,31 @@
 package com.tms.system.domain.dto;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.tms.common.core.domain.BaseEntity;
+import com.tms.system.domain.convert.RegionCodes;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 订单新增/修改参数
  * <p>下单时间取创建时间，表单不传。</p>
+ * <p>始发地/目的地：前端 AreaCascader 传编码数组 {@code origin}/{@code destination}，
+ * 反序列化时拆成省/市/区三字段入库。</p>
+ * <p>审计字段（createBy/createTime/updateBy/updateTime）继承自 BaseEntity，由 MyBatis 拦截器自动填充。</p>
  */
 @Data
-public class TmsOrderSaveReq {
+@EqualsAndHashCode(callSuper = true)
+public class TmsOrderSaveReq extends BaseEntity {
+    private static final long serialVersionUID = 1L;
+
     /** 订单ID（修改时必填） */
     private Long orderId;
 
@@ -25,24 +35,20 @@ public class TmsOrderSaveReq {
     /** 关联运单号 */
     private String waybillNo;
 
-    /** 客户名称（取当前登录人公司/部门） */
-    @NotBlank(message = "客户名称不能为空")
-    private String customerName;
+    /** 客户ID */
+    @NotNull(message = "客户不能为空")
+    private Long customerId;
 
     /** 订单状态 */
     private String orderStatus;
 
-    /** 订单来源 */
+    /** 订单来源（字典 tms_order_source） */
     @NotBlank(message = "订单来源不能为空")
     private String orderSource;
 
-    /** 运输类型/订单类型 */
+    /** 运输类型/订单类型（字典 tms_transport_type） */
     @NotBlank(message = "运输类型不能为空")
     private String transportType;
-
-    /** 货物类型 */
-    @NotBlank(message = "货物类型不能为空")
-    private String cargoType;
 
     /** 发货人 */
     @NotBlank(message = "发货人不能为空")
@@ -52,9 +58,15 @@ public class TmsOrderSaveReq {
     @NotBlank(message = "发货联系电话不能为空")
     private String senderPhone;
 
-    /** 始发地 */
+    /** 始发地-省编码 */
     @NotBlank(message = "始发地不能为空")
-    private String origin;
+    private String originProvince;
+
+    /** 始发地-市编码 */
+    private String originCity;
+
+    /** 始发地-区县编码 */
+    private String originDistrict;
 
     /** 发货地址 */
     @NotBlank(message = "发货地址不能为空")
@@ -68,9 +80,15 @@ public class TmsOrderSaveReq {
     @NotBlank(message = "收货联系电话不能为空")
     private String receiverPhone;
 
-    /** 目的地 */
+    /** 目的地-省编码 */
     @NotBlank(message = "目的地不能为空")
-    private String destination;
+    private String destinationProvince;
+
+    /** 目的地-市编码 */
+    private String destinationCity;
+
+    /** 目的地-区县编码 */
+    private String destinationDistrict;
 
     /** 收货地址 */
     @NotBlank(message = "收货地址不能为空")
@@ -80,58 +98,34 @@ public class TmsOrderSaveReq {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expectArriveTime;
 
-    /** 计费方式 */
-    @NotBlank(message = "计费方式不能为空")
-    private String billingMethod;
-
-    /** 运输费用 */
-    @NotNull(message = "运输费用不能为空")
-    private BigDecimal transportFee;
-
-    /** 保险费用 */
-    private BigDecimal insuranceFee;
-
-    /** 包装费用 */
-    private BigDecimal packingFee;
-
-    /** 装卸费用 */
-    private BigDecimal loadingFee;
-
-    /** 中转费用 */
-    private BigDecimal transferFee;
-
-    /** 燃油费用 */
-    private BigDecimal fuelFee;
-
-    /** 服务费用 */
-    private BigDecimal serviceFee;
-
-    /** 其他费用 */
-    private BigDecimal otherFee;
-
-    /** 费用合计 */
-    private BigDecimal totalFee;
-
-    /** 现付 */
-    private BigDecimal payCash;
-
-    /** 预付 */
-    private BigDecimal payPrepaid;
-
-    /** 到付 */
-    private BigDecimal payCod;
-
-    /** 周期付 */
-    private BigDecimal payPeriod;
-
-    /** 付费合计 */
-    private BigDecimal payTotal;
-
-    /** 订单备注 */
-    private String remark;
-
     /** 货物信息列表 */
     @Valid
     @NotEmpty(message = "货物信息不能为空")
     private List<TmsOrderCargoSaveReq> cargoList;
+
+    /** 前端 AreaCascader：["省","市","区"] → 拆字段 */
+    @JsonSetter("origin")
+    public void setOrigin(List<String> codes) {
+        this.originProvince = RegionCodes.at(codes, 0);
+        this.originCity = RegionCodes.at(codes, 1);
+        this.originDistrict = RegionCodes.at(codes, 2);
+    }
+
+    /** 前端 AreaCascader：["省","市","区"] → 拆字段 */
+    @JsonSetter("destination")
+    public void setDestination(List<String> codes) {
+        this.destinationProvince = RegionCodes.at(codes, 0);
+        this.destinationCity = RegionCodes.at(codes, 1);
+        this.destinationDistrict = RegionCodes.at(codes, 2);
+    }
+
+    @JsonIgnore
+    public List<String> getOrigin() {
+        return RegionCodes.toList(originProvince, originCity, originDistrict);
+    }
+
+    @JsonIgnore
+    public List<String> getDestination() {
+        return RegionCodes.toList(destinationProvince, destinationCity, destinationDistrict);
+    }
 }

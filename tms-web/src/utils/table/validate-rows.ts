@@ -1,6 +1,6 @@
 import { createElement } from "react"
 import type { TableRowData } from "tdesign-react"
-import { NotificationPlugin } from "tdesign-react"
+import { MessagePlugin, NotificationPlugin } from "tdesign-react"
 
 /** 单字段校验规则 */
 export type TableFieldRule<T extends TableRowData> = {
@@ -173,7 +173,11 @@ export function validateTableRows<T extends TableRowData>(
 export function validateTableDataSource<T extends TableRowData>(
   getDataSource: (() => T[]) | undefined | null,
   options: Omit<ValidateTableRowsOptions<T>, "rows">,
-): ValidateTableRowsResult {
+): ValidateTableRowsResult | undefined {
   const rows = getDataSource?.() ?? []
+  if (!rows?.length) {
+    MessagePlugin.warning("请至少添加一条数据", 30 * 1000)
+    return
+  }
   return validateTableRows({ ...options, rows })
 }

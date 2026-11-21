@@ -4,12 +4,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tms.system.domain.convert.RegionCodes;
 import com.tms.system.domain.enums.OrderStatus;
 import lombok.Data;
 
 /**
  * 订单列表 / 详情返回
  * <p>下单时间取 createTime。</p>
+ * <p>始发地/目的地库内为省市区三字段；JSON 对外仍返回 {@code origin}/{@code destination} 编码数组，供 AreaCascader 回显。</p>
  */
 @Data
 public class TmsOrderVo {
@@ -22,8 +26,14 @@ public class TmsOrderVo {
     /** 关联运单号 */
     private String waybillNo;
 
+    /** 客户ID */
+    private Long customerId;
+
     /** 客户名称 */
     private String customerName;
+
+    /** 下单时间 */
+    private String orderTime;
 
     /** 订单状态 */
     private String orderStatus;
@@ -37,7 +47,7 @@ public class TmsOrderVo {
     /** 运输类型/订单类型 */
     private String transportType;
 
-    /** 货物类型 */
+    /** 货物类型摘要（不入库；查询时取明细首行 cargo_type） */
     private String cargoType;
 
     /** 发货人 */
@@ -46,8 +56,17 @@ public class TmsOrderVo {
     /** 发货联系电话 */
     private String senderPhone;
 
-    /** 始发地 */
-    private String origin;
+    /** 始发地-省编码 */
+    @JsonIgnore
+    private String originProvince;
+
+    /** 始发地-市编码 */
+    @JsonIgnore
+    private String originCity;
+
+    /** 始发地-区县编码 */
+    @JsonIgnore
+    private String originDistrict;
 
     /** 发货地址 */
     private String senderAddress;
@@ -58,8 +77,17 @@ public class TmsOrderVo {
     /** 收货联系电话 */
     private String receiverPhone;
 
-    /** 目的地 */
-    private String destination;
+    /** 目的地-省编码 */
+    @JsonIgnore
+    private String destinationProvince;
+
+    /** 目的地-市编码 */
+    @JsonIgnore
+    private String destinationCity;
+
+    /** 目的地-区县编码 */
+    @JsonIgnore
+    private String destinationDistrict;
 
     /** 收货地址 */
     private String receiverAddress;
@@ -68,56 +96,17 @@ public class TmsOrderVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expectArriveTime;
 
-    /** 计费方式 */
-    private String billingMethod;
-
-    /** 运输费用 */
-    private BigDecimal transportFee;
-
-    /** 保险费用 */
-    private BigDecimal insuranceFee;
-
-    /** 包装费用 */
-    private BigDecimal packingFee;
-
-    /** 装卸费用 */
-    private BigDecimal loadingFee;
-
-    /** 中转费用 */
-    private BigDecimal transferFee;
-
-    /** 燃油费用 */
-    private BigDecimal fuelFee;
-
-    /** 服务费用 */
-    private BigDecimal serviceFee;
-
-    /** 其他费用 */
-    private BigDecimal otherFee;
-
-    /** 费用合计/运费合计 */
+    /** 费用合计（库表字段；列表展示） */
     private BigDecimal totalFee;
 
-    /** 现付 */
-    private BigDecimal payCash;
-
-    /** 预付 */
-    private BigDecimal payPrepaid;
-
-    /** 到付 */
-    private BigDecimal payCod;
-
-    /** 周期付 */
-    private BigDecimal payPeriod;
-
-    /** 付费合计 */
-    private BigDecimal payTotal;
-
-    /** 货物总数量（汇总） */
+    /** 货物总数量（服务端由明细汇总） */
     private BigDecimal totalQuantity;
 
-    /** 总重量kg（汇总） */
+    /** 总重量kg（服务端由明细汇总） */
     private BigDecimal totalWeight;
+
+    /** 总用车数（服务端由明细汇总） */
+    private Integer totalVehicleCount;
 
     /** 创建者 */
     private String createBy;
@@ -131,6 +120,18 @@ public class TmsOrderVo {
 
     /** 货物明细（详情时返回） */
     private List<TmsOrderCargoVo> cargoList;
+
+    /** 前端 AreaCascader 回显 */
+    @JsonProperty("origin")
+    public List<String> getOrigin() {
+        return RegionCodes.toList(originProvince, originCity, originDistrict);
+    }
+
+    /** 前端 AreaCascader 回显 */
+    @JsonProperty("destination")
+    public List<String> getDestination() {
+        return RegionCodes.toList(destinationProvince, destinationCity, destinationDistrict);
+    }
 
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;

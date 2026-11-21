@@ -5,43 +5,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.tms.system.mapper.TmsOrderMapper">
 
 	<resultMap type="com.tms.system.domain.vo.TmsOrderVo" id="TmsOrderVoResult">
-		<id     property="orderId"            column="order_id"             />
-		<result property="orderNo"            column="order_no"             />
-		<result property="waybillNo"          column="waybill_no"           />
-		<result property="customerName"       column="customer_name"        />
-		<result property="orderStatus"        column="order_status"         />
-		<result property="orderSource"        column="order_source"         />
-		<result property="transportType"      column="transport_type"       />
-		<result property="cargoType"          column="cargo_type"           />
-		<result property="senderName"         column="sender_name"          />
-		<result property="senderPhone"        column="sender_phone"         />
-		<result property="origin"             column="origin"               />
-		<result property="senderAddress"      column="sender_address"       />
-		<result property="receiverName"       column="receiver_name"        />
-		<result property="receiverPhone"      column="receiver_phone"       />
-		<result property="destination"        column="destination"          />
-		<result property="receiverAddress"    column="receiver_address"     />
-		<result property="expectArriveTime"   column="expect_arrive_time"   />
-		<result property="billingMethod"      column="billing_method"       />
-		<result property="transportFee"       column="transport_fee"        />
-		<result property="insuranceFee"       column="insurance_fee"        />
-		<result property="packingFee"         column="packing_fee"          />
-		<result property="loadingFee"         column="loading_fee"          />
-		<result property="transferFee"        column="transfer_fee"         />
-		<result property="fuelFee"            column="fuel_fee"             />
-		<result property="serviceFee"         column="service_fee"          />
-		<result property="otherFee"           column="other_fee"            />
-		<result property="totalFee"           column="total_fee"            />
-		<result property="payCash"            column="pay_cash"             />
-		<result property="payPrepaid"         column="pay_prepaid"          />
-		<result property="payCod"             column="pay_cod"              />
-		<result property="payPeriod"          column="pay_period"           />
-		<result property="payTotal"           column="pay_total"            />
-		<result property="totalQuantity"      column="total_quantity"       />
-		<result property="totalWeight"        column="total_weight"         />
-		<result property="createBy"           column="create_by"            />
-		<result property="createTime"         column="create_time"          />
-		<result property="remark"             column="remark"               />
+		<id     property="orderId"               column="order_id"                />
+		<result property="orderNo"               column="order_no"                />
+		<result property="waybillNo"             column="waybill_no"              />
+		<result property="customerId"            column="customer_id"             />
+		<result property="customerName"          column="customer_name"           />
+		<result property="orderStatus"           column="order_status"            />
+		<result property="orderSource"           column="order_source"            />
+		<result property="transportType"         column="transport_type"          />
+		<result property="senderName"            column="sender_name"             />
+		<result property="senderPhone"           column="sender_phone"            />
+		<result property="originProvince"        column="origin_province"         />
+		<result property="originCity"            column="origin_city"             />
+		<result property="originDistrict"        column="origin_district"         />
+		<result property="senderAddress"         column="sender_address"          />
+		<result property="receiverName"          column="receiver_name"           />
+		<result property="receiverPhone"         column="receiver_phone"          />
+		<result property="destinationProvince"   column="destination_province"    />
+		<result property="destinationCity"       column="destination_city"        />
+		<result property="destinationDistrict"   column="destination_district"    />
+		<result property="receiverAddress"       column="receiver_address"        />
+		<result property="expectArriveTime"      column="expect_arrive_time"      />
+		<result property="totalFee"              column="total_fee"               />
+		<result property="totalQuantity"         column="total_quantity"          />
+		<result property="totalWeight"           column="total_weight"            />
+		<result property="totalVehicleCount"     column="total_vehicle_count"     />
+		<result property="createBy"              column="create_by"               />
+		<result property="createTime"            column="create_time"             />
+		<result property="remark"                column="remark"                  />
 	</resultMap>
 
 	<resultMap type="com.tms.system.domain.vo.TmsOrderVo" id="TmsOrderDetailResult" extends="TmsOrderVoResult">
@@ -49,188 +40,148 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			column="order_id" select="com.tms.system.mapper.TmsOrderCargoMapper.selectCargoListByOrderId" />
 	</resultMap>
 
-	<resultMap type="com.tms.system.domain.TmsOrder" id="TmsOrderResult">
-		<id     property="orderId"            column="order_id"             />
-		<result property="orderNo"            column="order_no"             />
-		<result property="waybillNo"          column="waybill_no"           />
-		<result property="customerName"       column="customer_name"        />
-		<result property="orderStatus"        column="order_status"         />
-		<result property="orderSource"        column="order_source"         />
-		<result property="transportType"      column="transport_type"       />
-		<result property="cargoType"          column="cargo_type"           />
-		<result property="senderName"         column="sender_name"          />
-		<result property="senderPhone"        column="sender_phone"         />
-		<result property="origin"             column="origin"               />
-		<result property="senderAddress"      column="sender_address"       />
-		<result property="receiverName"       column="receiver_name"        />
-		<result property="receiverPhone"      column="receiver_phone"       />
-		<result property="destination"        column="destination"          />
-		<result property="receiverAddress"    column="receiver_address"     />
-		<result property="expectArriveTime"   column="expect_arrive_time"   />
-		<result property="billingMethod"      column="billing_method"       />
-		<result property="transportFee"       column="transport_fee"        />
-		<result property="insuranceFee"       column="insurance_fee"        />
-		<result property="packingFee"         column="packing_fee"          />
-		<result property="loadingFee"         column="loading_fee"          />
-		<result property="transferFee"        column="transfer_fee"         />
-		<result property="fuelFee"            column="fuel_fee"             />
-		<result property="serviceFee"         column="service_fee"          />
-		<result property="otherFee"           column="other_fee"            />
-		<result property="totalFee"           column="total_fee"            />
-		<result property="payCash"            column="pay_cash"             />
-		<result property="payPrepaid"         column="pay_prepaid"          />
-		<result property="payCod"             column="pay_cod"              />
-		<result property="payPeriod"          column="pay_period"           />
-		<result property="payTotal"           column="pay_total"            />
-		<result property="totalQuantity"      column="total_quantity"       />
-		<result property="totalWeight"        column="total_weight"         />
-		<result property="isDel"              column="is_del"               />
-		<result property="createBy"           column="create_by"            />
-		<result property="createTime"         column="create_time"          />
-		<result property="updateBy"           column="update_by"            />
-		<result property="updateTime"         column="update_time"          />
-		<result property="remark"             column="remark"               />
-	</resultMap>
-
 	<sql id="selectOrderVo">
-		select order_id, order_no, waybill_no, customer_name, order_status, order_source,
-			transport_type, cargo_type, sender_name, sender_phone, origin, sender_address,
-			receiver_name, receiver_phone, destination, receiver_address,
-			expect_arrive_time, billing_method,
-			transport_fee, insurance_fee, packing_fee, loading_fee, transfer_fee, fuel_fee, service_fee, other_fee, total_fee,
-			pay_cash, pay_prepaid, pay_cod, pay_period, pay_total,
-			total_quantity, total_weight,
-			is_del, create_by, create_time, update_by, update_time, remark
-		from tms_order
+		select o.order_id, o.order_no, o.waybill_no, o.customer_id, c.customer_name,
+			o.order_status, o.order_source, o.transport_type, o.sender_name, o.sender_phone,
+			o.origin_province, o.origin_city, o.origin_district, o.sender_address,
+			o.receiver_name, o.receiver_phone,
+			o.destination_province, o.destination_city, o.destination_district, o.receiver_address,
+			o.expect_arrive_time, o.total_fee,
+			(select cgo.cargo_type from tms_order_cargo cgo
+				where cgo.order_id = o.order_id and cgo.is_del = '0'
+				order by cgo.sort_num asc, cgo.cargo_id asc limit 1) as cargo_type_summary,
+			(select ifnull(sum(cgo.quantity), 0) from tms_order_cargo cgo
+				where cgo.order_id = o.order_id and cgo.is_del = '0') as total_quantity,
+			(select ifnull(sum(cgo.weight), 0) from tms_order_cargo cgo
+				where cgo.order_id = o.order_id and cgo.is_del = '0') as total_weight,
+			(select ifnull(sum(cgo.vehicle_count), 0) from tms_order_cargo cgo
+				where cgo.order_id = o.order_id and cgo.is_del = '0') as total_vehicle_count,
+			o.is_del, o.create_by, o.create_time, o.update_by, o.update_time, o.remark
+		from tms_order o
+		left join tms_customer c on c.customer_id = o.customer_id and c.is_del = '0'
 	</sql>
 
 	<select id="selectOrderList" parameterType="com.tms.system.domain.dto.TmsOrderQuery" resultMap="TmsOrderVoResult">
 		<include refid="selectOrderVo"/>
-		where is_del = '0'
+		where o.is_del = '0'
 		<if test="orderNo != null and orderNo != ''">
-			AND order_no like concat('%', #{orderNo}, '%')
+			AND o.order_no like concat('%', #{orderNo}, '%')
 		</if>
 		<if test="waybillNo != null and waybillNo != ''">
-			AND waybill_no like concat('%', #{waybillNo}, '%')
+			AND o.waybill_no like concat('%', #{waybillNo}, '%')
 		</if>
-		<if test="customerName != null and customerName != ''">
-			AND customer_name like concat('%', #{customerName}, '%')
+		<if test="customerId != null">
+			AND o.customer_id = #{customerId}
 		</if>
 		<if test="orderStatus != null and orderStatus != ''">
-			AND order_status = #{orderStatus}
+			AND o.order_status = #{orderStatus}
 		</if>
 		<if test="origin != null and origin != ''">
-			AND origin like concat('%', #{origin}, '%')
+			AND (
+				o.origin_province like concat('%', #{origin}, '%')
+				OR o.origin_city like concat('%', #{origin}, '%')
+				OR o.origin_district like concat('%', #{origin}, '%')
+				OR concat_ws(',', o.origin_province, o.origin_city, o.origin_district) like concat('%', #{origin}, '%')
+			)
 		</if>
 		<if test="destination != null and destination != ''">
-			AND destination like concat('%', #{destination}, '%')
+			AND (
+				o.destination_province like concat('%', #{destination}, '%')
+				OR o.destination_city like concat('%', #{destination}, '%')
+				OR o.destination_district like concat('%', #{destination}, '%')
+				OR concat_ws(',', o.destination_province, o.destination_city, o.destination_district) like concat('%', #{destination}, '%')
+			)
 		</if>
 		<if test="beginOrderTime != null">
-			AND create_time &gt;= #{beginOrderTime}
+			AND o.create_time &gt;= #{beginOrderTime}
 		</if>
 		<if test="endOrderTime != null">
-			AND create_time &lt;= #{endOrderTime}
+			AND o.create_time &lt;= #{endOrderTime}
 		</if>
-		order by create_time desc
+		order by o.create_time desc
 	</select>
 
 	<select id="selectOrderById" parameterType="Long" resultMap="TmsOrderDetailResult">
 		<include refid="selectOrderVo"/>
-		where order_id = #{orderId} and is_del = '0'
+		where o.order_id = #{orderId} and o.is_del = '0'
 	</select>
 
-	<select id="selectOrderByOrderNo" parameterType="String" resultMap="TmsOrderResult">
+	<select id="selectOrderByOrderNo" parameterType="String" resultMap="TmsOrderVoResult">
 		<include refid="selectOrderVo"/>
-		where order_no = #{orderNo} and is_del = '0' limit 1
+		where o.order_no = #{orderNo} and o.is_del = '0' limit 1
 	</select>
 
-	<insert id="insertOrder" parameterType="com.tms.system.domain.TmsOrder" useGeneratedKeys="true" keyProperty="orderId">
+	<insert id="insertOrder" parameterType="com.tms.system.domain.dto.TmsOrderSaveReq" useGeneratedKeys="true" keyProperty="orderId">
 		insert into tms_order(
 			<if test="orderNo != null and orderNo != ''">order_no,</if>
 			<if test="waybillNo != null and waybillNo != ''">waybill_no,</if>
-			<if test="customerName != null and customerName != ''">customer_name,</if>
+			<if test="customerId != null">customer_id,</if>
 			<if test="orderStatus != null and orderStatus != ''">order_status,</if>
 			<if test="orderSource != null and orderSource != ''">order_source,</if>
 			<if test="transportType != null and transportType != ''">transport_type,</if>
-			<if test="cargoType != null and cargoType != ''">cargo_type,</if>
 			<if test="senderName != null and senderName != ''">sender_name,</if>
 			<if test="senderPhone != null and senderPhone != ''">sender_phone,</if>
-			<if test="origin != null and origin != ''">origin,</if>
+			<if test="originProvince != null and originProvince != ''">origin_province,</if>
+			<if test="originCity != null and originCity != ''">origin_city,</if>
+			<if test="originDistrict != null and originDistrict != ''">origin_district,</if>
 			<if test="senderAddress != null and senderAddress != ''">sender_address,</if>
 			<if test="receiverName != null and receiverName != ''">receiver_name,</if>
 			<if test="receiverPhone != null and receiverPhone != ''">receiver_phone,</if>
-			<if test="destination != null and destination != ''">destination,</if>
+			<if test="destinationProvince != null and destinationProvince != ''">destination_province,</if>
+			<if test="destinationCity != null and destinationCity != ''">destination_city,</if>
+			<if test="destinationDistrict != null and destinationDistrict != ''">destination_district,</if>
 			<if test="receiverAddress != null and receiverAddress != ''">receiver_address,</if>
 			<if test="expectArriveTime != null">expect_arrive_time,</if>
-			<if test="billingMethod != null and billingMethod != ''">billing_method,</if>
-			transport_fee, insurance_fee, packing_fee, loading_fee, transfer_fee,
-			fuel_fee, service_fee, other_fee, total_fee,
-			pay_cash, pay_prepaid, pay_cod, pay_period, pay_total,
-			total_quantity, total_weight,
+			total_fee,
 			<if test="remark != null and remark != ''">remark,</if>
 			is_del, create_by, update_by, create_time, update_time
 		)values(
 			<if test="orderNo != null and orderNo != ''">#{orderNo},</if>
 			<if test="waybillNo != null and waybillNo != ''">#{waybillNo},</if>
-			<if test="customerName != null and customerName != ''">#{customerName},</if>
+			<if test="customerId != null">#{customerId},</if>
 			<if test="orderStatus != null and orderStatus != ''">#{orderStatus},</if>
 			<if test="orderSource != null and orderSource != ''">#{orderSource},</if>
 			<if test="transportType != null and transportType != ''">#{transportType},</if>
-			<if test="cargoType != null and cargoType != ''">#{cargoType},</if>
 			<if test="senderName != null and senderName != ''">#{senderName},</if>
 			<if test="senderPhone != null and senderPhone != ''">#{senderPhone},</if>
-			<if test="origin != null and origin != ''">#{origin},</if>
+			<if test="originProvince != null and originProvince != ''">#{originProvince},</if>
+			<if test="originCity != null and originCity != ''">#{originCity},</if>
+			<if test="originDistrict != null and originDistrict != ''">#{originDistrict},</if>
 			<if test="senderAddress != null and senderAddress != ''">#{senderAddress},</if>
 			<if test="receiverName != null and receiverName != ''">#{receiverName},</if>
 			<if test="receiverPhone != null and receiverPhone != ''">#{receiverPhone},</if>
-			<if test="destination != null and destination != ''">#{destination},</if>
+			<if test="destinationProvince != null and destinationProvince != ''">#{destinationProvince},</if>
+			<if test="destinationCity != null and destinationCity != ''">#{destinationCity},</if>
+			<if test="destinationDistrict != null and destinationDistrict != ''">#{destinationDistrict},</if>
 			<if test="receiverAddress != null and receiverAddress != ''">#{receiverAddress},</if>
 			<if test="expectArriveTime != null">#{expectArriveTime},</if>
-			<if test="billingMethod != null and billingMethod != ''">#{billingMethod},</if>
-			#{transportFee}, #{insuranceFee}, #{packingFee}, #{loadingFee}, #{transferFee},
-			#{fuelFee}, #{serviceFee}, #{otherFee}, #{totalFee},
-			#{payCash}, #{payPrepaid}, #{payCod}, #{payPeriod}, #{payTotal},
-			#{totalQuantity}, #{totalWeight},
+			0,
 			<if test="remark != null and remark != ''">#{remark},</if>
 			'0', #{createBy}, #{updateBy}, sysdate(), sysdate()
 		)
 	</insert>
 
-	<update id="updateOrder" parameterType="com.tms.system.domain.TmsOrder">
+	<update id="updateOrder" parameterType="com.tms.system.domain.dto.TmsOrderSaveReq">
 		update tms_order
 		<set>
 			<if test="waybillNo != null">waybill_no = #{waybillNo},</if>
-			<if test="customerName != null and customerName != ''">customer_name = #{customerName},</if>
+			<if test="customerId != null">customer_id = #{customerId},</if>
 			<if test="orderStatus != null and orderStatus != ''">order_status = #{orderStatus},</if>
 			<if test="orderSource != null and orderSource != ''">order_source = #{orderSource},</if>
 			<if test="transportType != null and transportType != ''">transport_type = #{transportType},</if>
-			<if test="cargoType != null and cargoType != ''">cargo_type = #{cargoType},</if>
 			<if test="senderName != null and senderName != ''">sender_name = #{senderName},</if>
 			<if test="senderPhone != null and senderPhone != ''">sender_phone = #{senderPhone},</if>
-			<if test="origin != null and origin != ''">origin = #{origin},</if>
+			<if test="originProvince != null">origin_province = #{originProvince},</if>
+			<if test="originCity != null">origin_city = #{originCity},</if>
+			<if test="originDistrict != null">origin_district = #{originDistrict},</if>
 			<if test="senderAddress != null and senderAddress != ''">sender_address = #{senderAddress},</if>
 			<if test="receiverName != null and receiverName != ''">receiver_name = #{receiverName},</if>
 			<if test="receiverPhone != null and receiverPhone != ''">receiver_phone = #{receiverPhone},</if>
-			<if test="destination != null and destination != ''">destination = #{destination},</if>
+			<if test="destinationProvince != null">destination_province = #{destinationProvince},</if>
+			<if test="destinationCity != null">destination_city = #{destinationCity},</if>
+			<if test="destinationDistrict != null">destination_district = #{destinationDistrict},</if>
 			<if test="receiverAddress != null and receiverAddress != ''">receiver_address = #{receiverAddress},</if>
 			<if test="expectArriveTime != null">expect_arrive_time = #{expectArriveTime},</if>
-			<if test="billingMethod != null and billingMethod != ''">billing_method = #{billingMethod},</if>
-			<if test="transportFee != null">transport_fee = #{transportFee},</if>
-			<if test="insuranceFee != null">insurance_fee = #{insuranceFee},</if>
-			<if test="packingFee != null">packing_fee = #{packingFee},</if>
-			<if test="loadingFee != null">loading_fee = #{loadingFee},</if>
-			<if test="transferFee != null">transfer_fee = #{transferFee},</if>
-			<if test="fuelFee != null">fuel_fee = #{fuelFee},</if>
-			<if test="serviceFee != null">service_fee = #{serviceFee},</if>
-			<if test="otherFee != null">other_fee = #{otherFee},</if>
-			<if test="totalFee != null">total_fee = #{totalFee},</if>
-			<if test="payCash != null">pay_cash = #{payCash},</if>
-			<if test="payPrepaid != null">pay_prepaid = #{payPrepaid},</if>
-			<if test="payCod != null">pay_cod = #{payCod},</if>
-			<if test="payPeriod != null">pay_period = #{payPeriod},</if>
-			<if test="payTotal != null">pay_total = #{payTotal},</if>
-			<if test="totalQuantity != null">total_quantity = #{totalQuantity},</if>
-			<if test="totalWeight != null">total_weight = #{totalWeight},</if>
 			<if test="remark != null">remark = #{remark},</if>
 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
 			update_time = sysdate()
@@ -245,7 +196,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="deleteOrderByIds" parameterType="Long">
 		update tms_order set is_del = '1', update_time = sysdate()
 		where order_id in
-		<foreach collection="array" item="orderId" open="(" separator="," close=")">
+		<foreach collection="orderIds" item="orderId" open="(" separator="," close=")">
 			#{orderId}
 		</foreach>
 	</update>

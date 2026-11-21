@@ -18,8 +18,8 @@ import com.tms.common.utils.StringUtils;
 import com.tms.common.utils.poi.ExcelImportCommitResult;
 import com.tms.common.utils.poi.ExcelImportHelper;
 import com.tms.common.utils.poi.ExcelUtil;
-import com.tms.system.domain.TmsCarrier;
-import com.tms.system.domain.convert.TmsCarrierConvert;
+import com.tms.system.domain.dto.TmsCarrierQuery;
+import com.tms.system.domain.dto.TmsCarrierSaveReq;
 import com.tms.system.domain.vo.TmsCarrierVo;
 import com.tms.system.mapper.TmsCarrierMapper;
 import com.tms.system.service.ITmsCarrierService;
@@ -30,37 +30,37 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
     private TmsCarrierMapper carrierMapper;
 
     @Override
-    public List<TmsCarrier> selectCarrierList(TmsCarrier query) {
-        return carrierMapper.selectCarrierList(query == null ? new TmsCarrier() : query);
+    public List<TmsCarrierVo> selectCarrierList(TmsCarrierQuery query) {
+        return carrierMapper.selectCarrierList(query == null ? new TmsCarrierQuery() : query);
     }
 
     @Override
-    public TmsCarrier selectCarrierById(Long carrierId) {
+    public TmsCarrierVo selectCarrierById(Long carrierId) {
         return carrierMapper.selectCarrierById(carrierId);
     }
 
     @Override
-    public boolean checkCarrierNameUnique(TmsCarrier carrier) {
-        long id = carrier.getCarrierId() == null ? -1L : carrier.getCarrierId();
-        TmsCarrier info = carrierMapper.checkCarrierNameUnique(carrier.getCarrierName());
+    public boolean checkCarrierNameUnique(TmsCarrierSaveReq req) {
+        long id = req.getCarrierId() == null ? -1L : req.getCarrierId();
+        TmsCarrierVo info = carrierMapper.checkCarrierNameUnique(req.getCarrierName());
         return info == null || info.getCarrierId().longValue() == id;
     }
 
     @Override
-    public int insertCarrier(TmsCarrier carrier) {
-        if (StringUtils.isEmpty(carrier.getStatus())) {
-            carrier.setStatus("0");
+    public int insertCarrier(TmsCarrierSaveReq req) {
+        if (StringUtils.isEmpty(req.getStatus())) {
+            req.setStatus("0");
         }
-        if (StringUtils.isEmpty(carrier.getContractSigned())) {
-            carrier.setContractSigned("0");
+        if (StringUtils.isEmpty(req.getContractSigned())) {
+            req.setContractSigned("0");
         }
-        carrier.setCarrierNo(generateCarrierNo());
-        return carrierMapper.insertCarrier(carrier);
+        req.setCarrierNo(generateCarrierNo());
+        return carrierMapper.insertCarrier(req);
     }
 
     @Override
-    public int updateCarrier(TmsCarrier carrier) {
-        return carrierMapper.updateCarrier(carrier);
+    public int updateCarrier(TmsCarrierSaveReq req) {
+        return carrierMapper.updateCarrier(req);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
             }
 
             Map<Integer, String> errors = new LinkedHashMap<>();
-            List<TmsCarrier> toInsert = new ArrayList<>();
+            List<TmsCarrierSaveReq> toInsert = new ArrayList<>();
             Set<String> pendingNames = new HashSet<>();
             for (int i = 0; i < vos.size(); i++) {
                 int sheetRow = i + 1;
@@ -96,24 +96,24 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
                 if (StringUtils.isNotEmpty(validateMsg)) {
                     messages.add(validateMsg);
                 }
-                TmsCarrier entity = TmsCarrierConvert.fromImportVo(vo);
-                if (StringUtils.isEmpty(entity.getStatus())) {
-                    entity.setStatus("0");
+                TmsCarrierSaveReq req = fromImportVo(vo);
+                if (StringUtils.isEmpty(req.getStatus())) {
+                    req.setStatus("0");
                 }
-                if (StringUtils.isEmpty(entity.getSettleType())) {
-                    entity.setSettleType("monthly");
+                if (StringUtils.isEmpty(req.getSettleType())) {
+                    req.setSettleType("monthly");
                 }
-                if (StringUtils.isEmpty(entity.getContractSigned())) {
-                    entity.setContractSigned("0");
+                if (StringUtils.isEmpty(req.getContractSigned())) {
+                    req.setContractSigned("0");
                 }
-                if (StringUtils.isEmpty(entity.getInvoiceTitle()) && StringUtils.isNotEmpty(entity.getCarrierName())) {
-                    entity.setInvoiceTitle(entity.getCarrierName());
+                if (StringUtils.isEmpty(req.getInvoiceTitle()) && StringUtils.isNotEmpty(req.getCarrierName())) {
+                    req.setInvoiceTitle(req.getCarrierName());
                 }
-                String carrierName = entity.getCarrierName();
+                String carrierName = req.getCarrierName();
                 if (StringUtils.isNotEmpty(carrierName)) {
                     if (pendingNames.contains(carrierName)) {
                         messages.add("导入文件中承运商名称重复");
-                    } else if (!checkCarrierNameUnique(entity)) {
+                    } else if (!checkCarrierNameUnique(req)) {
                         messages.add("承运商「" + carrierName + "」已存在");
                     }
                 }
@@ -122,9 +122,9 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
                     continue;
                 }
                 pendingNames.add(carrierName);
-                entity.setCreateBy(operName);
-                entity.setUpdateBy(operName);
-                toInsert.add(entity);
+                req.setCreateBy(operName);
+                req.setUpdateBy(operName);
+                toInsert.add(req);
             }
 
             ExcelImportCommitResult result = buildImportResult(vos.size(), errors, fileBytes, file.getOriginalFilename());
@@ -133,7 +133,7 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
                 result.setMessage("校验未全部通过，未入库。失败 " + errors.size() + " 条，请下载错误日志");
                 return result;
             }
-            for (TmsCarrier item : toInsert) {
+            for (TmsCarrierSaveReq item : toInsert) {
                 insertCarrier(item);
             }
             result.setSuccessCount(toInsert.size());
@@ -185,5 +185,31 @@ public class TmsCarrierServiceImpl implements ITmsCarrierService {
             }
         }
         return prefix + String.format("%04d", seq);
+    }
+
+    /** Excel 导入行 → SaveReq */
+    private static TmsCarrierSaveReq fromImportVo(TmsCarrierVo vo) {
+        TmsCarrierSaveReq req = new TmsCarrierSaveReq();
+        if (vo == null) {
+            return req;
+        }
+        req.setCarrierName(vo.getCarrierName());
+        req.setShortName(vo.getShortName());
+        req.setLegalPerson(vo.getLegalPerson());
+        req.setCarrierType(vo.getCarrierType());
+        req.setCarrierLevel(vo.getCarrierLevel());
+        req.setTaxRegNo(vo.getTaxRegNo());
+        req.setCompanyAddress(vo.getCompanyAddress());
+        req.setCompanyEmail(vo.getCompanyEmail());
+        req.setStatus(vo.getStatus());
+        req.setContactName(vo.getContactName());
+        req.setContactPhone(vo.getContactPhone());
+        req.setSettleType(vo.getSettleType());
+        req.setInvoiceTitle(vo.getInvoiceTitle());
+        req.setTaxNo(vo.getTaxNo());
+        req.setContractSigned(vo.getContractSigned());
+        req.setContractExpireDate(vo.getContractExpireDate());
+        req.setRemark(vo.getRemark());
+        return req;
     }
 }

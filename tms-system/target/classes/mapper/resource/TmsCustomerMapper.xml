@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tms.system.mapper.TmsCustomerMapper">
 
-	<resultMap type="com.tms.system.domain.TmsCustomer" id="TmsCustomerResult">
+	<resultMap type="com.tms.system.domain.vo.TmsCustomerVo" id="TmsCustomerResult">
 		<id     property="customerId"          column="customer_id"           />
 		<result property="customerNo"          column="customer_no"           />
 		<result property="customerName"        column="customer_name"         />
@@ -34,11 +34,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="bankAccountName"     column="bank_account_name"     />
 		<result property="bankAccountNo"       column="bank_account_no"       />
 		<result property="remark"              column="remark"                />
-		<result property="isDel"               column="is_del"                />
 		<result property="createBy"            column="create_by"             />
 		<result property="createTime"          column="create_time"           />
-		<result property="updateBy"            column="update_by"             />
-		<result property="updateTime"          column="update_time"           />
 	</resultMap>
 
 	<sql id="selectCustomerVo">
@@ -48,11 +45,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			contact_name, contact_phone, contact_dept, contact_title, contact_email, contact_wechat,
 			settle_type, credit_limit, pay_period_days,
 			invoice_title, tax_no, bank_name, bank_account_name, bank_account_no,
-			remark, is_del, create_by, create_time, update_by, update_time
+			remark, create_by, create_time
 		from tms_customer
 	</sql>
 
-	<select id="selectCustomerList" parameterType="com.tms.system.domain.TmsCustomer" resultMap="TmsCustomerResult">
+	<select id="selectCustomerList" parameterType="com.tms.system.domain.dto.TmsCustomerQuery" resultMap="TmsCustomerResult">
 		<include refid="selectCustomerVo"/>
 		where is_del = '0'
 		<if test="customerLevel != null and customerLevel != ''">
@@ -95,7 +92,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select max(customer_no) from tms_customer where customer_no like concat(#{prefix}, '%')
 	</select>
 
-	<insert id="insertCustomer" parameterType="com.tms.system.domain.TmsCustomer" useGeneratedKeys="true" keyProperty="customerId">
+	<insert id="insertCustomer" parameterType="com.tms.system.domain.dto.TmsCustomerSaveReq" useGeneratedKeys="true" keyProperty="customerId">
 		insert into tms_customer(
 			customer_no, customer_name,
 			<if test="shortName != null and shortName != ''">short_name,</if>
@@ -155,7 +152,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	</insert>
 
-	<update id="updateCustomer" parameterType="com.tms.system.domain.TmsCustomer">
+	<update id="updateCustomer" parameterType="com.tms.system.domain.dto.TmsCustomerSaveReq">
 		update tms_customer
 		<set>
 			<if test="customerName != null and customerName != ''">customer_name = #{customerName},</if>

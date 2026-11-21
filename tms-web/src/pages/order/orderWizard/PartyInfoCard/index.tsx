@@ -3,6 +3,7 @@ import type { FormConfig } from "@/interface"
 import type { ReactNode } from "react"
 import { cn } from "@/utils/methods"
 import "./index.css"
+import { InternalFormInstance } from "tdesign-react"
 
 type PartyVariant = "sender" | "receiver"
 
@@ -15,10 +16,11 @@ type PartyInfoCardProps = {
   variant: PartyVariant
   formConfig: FormConfig[]
   className?: string
+  form: InternalFormInstance
 }
 
 export function PartyInfoCard(props: PartyInfoCardProps) {
-  const { variant, formConfig, className } = props
+  const { variant, formConfig, className,form } = props
   const meta = VARIANT_META[variant]
 
   return (
@@ -30,6 +32,7 @@ export function PartyInfoCard(props: PartyInfoCardProps) {
         <span className="party-info-card__dash" aria-hidden />
       </div>
       <BasicForm
+        form={form}
         className="party-info-card__form"
         formConfig={formConfig}
         labelWidth={90}

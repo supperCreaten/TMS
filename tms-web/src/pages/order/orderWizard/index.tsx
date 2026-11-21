@@ -2,6 +2,7 @@ import AreaCascader from "@/components/AreaCascader"
 import BasicForm from "@/components/BasicForm"
 import BasicTable, { BasicTableRef } from "@/components/BasicTable"
 import ContentSection from "@/components/ContentSection"
+import EditableTextCell from "@/components/EditableTextCell"
 import InputText from "@/components/InputText"
 import LayoutTitle from "@/components/LayoutTitle"
 import { FormConfig } from "@/interface"
@@ -10,21 +11,14 @@ import { validateTableDataSource, type TableFieldRule } from "@/utils/table"
 import NP from "number-precision"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { ColProps, TableProps } from "tdesign-react"
-import { Button, DatePicker, Select } from "tdesign-react"
+import { Button, DatePicker, Form, MessagePlugin, Select } from "tdesign-react"
 import { AddIcon } from "tdesign-icons-react"
-import {
-  CARGO_TYPE_OPTIONS,
-  ORDER_SOURCE_OPTIONS,
-  TRANSPORT_TYPE_OPTIONS,
-} from "../constants"
-import {
-  CargoTextCell,
-  CargoUnitCell,
-  CargoVehicleLengthCell,
-  CargoVehicleTypeCell,
-} from "./CargoEditableCell"
+import { mockBaseInfo, mockCargoList, mockReceiver, mockSender, ORDER_DICT } from "../constants"
 import { PartyInfoCard, PartyInfoPair } from "./PartyInfoCard"
 import "./index.css"
+import api from "@/api"
+import useDict from "@/hooks/use-dict"
+import { useSearchParams } from "react-router-dom"
 
 /** TDesign 12 栅格：xl 一行 3，md 一行 2，更小屏一行 1；地址始终整行 */
 const PARTY_COL: ColProps = { xl: 4, md: 6, sm: 12, xs: 12 }
@@ -43,6 +37,7 @@ const CARGO_TABLE_SCROLL = {
 interface CargoRow {
   id: string | number
   cargoName?: string
+  cargoType?: string
   quantity?: string
   unit?: string
   weight?: string
@@ -55,6 +50,7 @@ function createEmptyCargoRow(): CargoRow {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     cargoName: "",
+    cargoType: "",
     quantity: "",
     unit: "",
     weight: "",
@@ -99,6 +95,7 @@ function formatCargoTotal(value: number, decimalPlaces?: number) {
 /** 货物表数据校验规则（校验 getDataSource，不改行内样式） */
 const CARGO_TABLE_RULES: TableFieldRule<CargoRow>[] = [
   { field: "cargoName", required: "货物名称不能为空" },
+  { field: "cargoType", required: "货物类型不能为空" },
   {
     field: "quantity",
     required: "数量不能为空",
@@ -123,13 +120,38 @@ const CARGO_TABLE_RULES: TableFieldRule<CargoRow>[] = [
 export default function OrderWizard(props: { mode: "create" | "edit" }) {
   const { mode } = props
   const tableRef = useRef<BasicTableRef<CargoRow>>(null)
+  const [baseInfoForm] = Form.useForm()
+  const [senderForm] = Form.useForm()
+  const [receiverForm] = Form.useForm()
+  const [searchParams] = useSearchParams()
   const [cargoTotals, setCargoTotals] = useState<CargoTotals>(EMPTY_CARGO_TOTALS)
-
+  const [loading, setLoading] = useState<boolean>(false)
+  const [submitting, setSubmitting] = useState<boolean>(false)
+  const [customerList, setCustomerList] = useState<Array<{ customerName: string; customerId: string }> | Array<any>>([])
+  const dict = useDict([
+    ORDER_DICT.orderSource,
+    ORDER_DICT.transportType,
+    ORDER_DICT.cargoType,
+    ORDER_DICT.cargoUnit,
+    ORDER_DICT.vehicleType,
+    ORDER_DICT.vehicleLength,
+  ])
+  const orderSourceOptions = dict[ORDER_DICT.orderSource] ?? []
+  const transportTypeOptions = dict[ORDER_DICT.transportType] ?? []
+  const cargoTypeOptions = dict[ORDER_DICT.cargoType] ?? []
+  const cargoUnitOptions = dict[ORDER_DICT.cargoUnit] ?? []
+  const vehicleTypeOptions = dict[ORDER_DICT.vehicleType] ?? []
+  const vehicleLengthOptions = dict[ORDER_DICT.vehicleLength] ?? []
   const refreshCargoTotals = useCallback(() => {
     const rows = tableRef.current?.getDataSource() ?? []
     setCargoTotals(calcCargoTotals(rows))
   }, [])
-
+  const getCustomerList = useCallback(async () => {
+    setCustomerList([])
+    const data = await api.customerAllQuery()
+    const list = data || []
+    setCustomerList(list?.map((v) => ({ label: v.customerName, value: v.customerId })))
+  }, [])
   const commitCargoPatch = useCallback(
     (rowId: string | number, patch: Partial<CargoRow>) => {
       tableRef.current?.updateRowByKey(rowId, patch)
@@ -142,7 +164,16 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
     tableRef.current?.setTableData([createEmptyCargoRow()])
     refreshCargoTotals()
   }, [refreshCargoTotals])
-
+  useEffect(() => {
+    const request = async () => {
+      await getCustomerList()
+      baseInfoForm.setFieldsValue({ ...mockBaseInfo })
+      senderForm.setFieldsValue({ ...mockSender })
+      receiverForm.setFieldsValue({ ...mockReceiver })
+      tableRef.current?.setTableData(mockCargoList)
+    }
+    request()
+  }, [])
   // 基础信息
   const basicFormConfig = useMemo<FormConfig[]>(
     () => [
@@ -152,9 +183,18 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         component: <InputText placeholder="自动生成" disabled />,
       },
       {
-        name: "customerName",
+        name: "customerId",
         label: "客户名称",
-        component: <InputText disabled />,
+        rules: [{ required: true, message: "请选择客户名称" }],
+        component: (
+          <Select
+            placeholder="请选择客户名称"
+            clearable
+            filterable
+            options={customerList}
+            scroll={{ type: "virtual", threshold: 50 }}
+          />
+        ),
       },
       {
         name: "createTime",
@@ -165,19 +205,13 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         name: "orderSource",
         label: "订单来源",
         rules: [{ required: true, message: "请选择订单来源" }],
-        component: <Select placeholder="请选择订单来源" clearable filterable options={ORDER_SOURCE_OPTIONS} />,
+        component: <Select placeholder="请选择订单来源" clearable filterable options={orderSourceOptions} />,
       },
       {
         name: "transportType",
         label: "运输类型",
         rules: [{ required: true, message: "请选择运输类型" }],
-        component: <Select placeholder="请选择运输类型" clearable filterable options={TRANSPORT_TYPE_OPTIONS} />,
-      },
-      {
-        name: "cargoType",
-        label: "货物类型",
-        rules: [{ required: true, message: "请选择货物类型" }],
-        component: <Select placeholder="请选择货物类型" clearable filterable options={CARGO_TYPE_OPTIONS} />,
+        component: <Select placeholder="请选择运输类型" clearable filterable options={transportTypeOptions} />,
       },
       {
         name: "expectArriveTime",
@@ -196,7 +230,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         ),
       },
     ],
-    [mode],
+    [mode, customerList, orderSourceOptions, transportTypeOptions],
   )
   // 发货人信息
   const senderFormConfig = useMemo<FormConfig[]>(
@@ -289,7 +323,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         width: 300,
         align: "center",
         cell: ({ row }) => (
-          <CargoTextCell
+          <EditableTextCell
             rowId={row.id}
             field="cargoName"
             value={row.cargoName}
@@ -300,12 +334,27 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         ),
       },
       {
+        title: "货物类型",
+        colKey: "cargoType",
+        width: 180,
+        align: "center",
+        cell: ({ row }) => (
+          <Select
+            clearable
+            placeholder="请选择货物类型"
+            options={cargoTypeOptions}
+            value={row.cargoType || undefined}
+            onChange={(val) => commitCargoPatch(row.id, { cargoType: (val as string) ?? "" })}
+          />
+        ),
+      },
+      {
         title: "数量",
         colKey: "quantity",
         width: 180,
         align: "center",
         cell: ({ row }) => (
-          <CargoTextCell
+          <EditableTextCell
             rowId={row.id}
             field="quantity"
             value={row.quantity}
@@ -319,7 +368,15 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         colKey: "unit",
         width: 130,
         align: "center",
-        cell: ({ row }) => <CargoUnitCell rowId={row.id} value={row.unit} onCommit={commitCargoPatch} />,
+        cell: ({ row }) => (
+          <Select
+            clearable
+            placeholder="请选择"
+            options={cargoUnitOptions}
+            value={row.unit || undefined}
+            onChange={(val) => commitCargoPatch(row.id, { unit: (val as string) ?? "" })}
+          />
+        ),
       },
       {
         title: "重量（kg）",
@@ -327,7 +384,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         width: 180,
         align: "center",
         cell: ({ row }) => (
-          <CargoTextCell
+          <EditableTextCell
             rowId={row.id}
             field="weight"
             value={row.weight}
@@ -343,7 +400,13 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         width: 180,
         align: "center",
         cell: ({ row }) => (
-          <CargoVehicleTypeCell rowId={row.id} value={row.vehicleType} onCommit={commitCargoPatch} />
+          <Select
+            clearable
+            placeholder="请选择"
+            options={vehicleTypeOptions}
+            value={row.vehicleType || undefined}
+            onChange={(val) => commitCargoPatch(row.id, { vehicleType: (val as string) ?? "" })}
+          />
         ),
       },
       {
@@ -352,7 +415,13 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         width: 180,
         align: "center",
         cell: ({ row }) => (
-          <CargoVehicleLengthCell rowId={row.id} value={row.vehicleLength} onCommit={commitCargoPatch} />
+          <Select
+            clearable
+            placeholder="请选择"
+            options={vehicleLengthOptions}
+            value={row.vehicleLength || undefined}
+            onChange={(val) => commitCargoPatch(row.id, { vehicleLength: (val as string) ?? "" })}
+          />
         ),
       },
       {
@@ -361,7 +430,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         width: 180,
         align: "center",
         cell: ({ row }) => (
-          <CargoTextCell
+          <EditableTextCell
             rowId={row.id}
             field="vehicleCount"
             value={row.vehicleCount}
@@ -390,23 +459,51 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         ),
       },
     ],
-    [commitCargoPatch, refreshCargoTotals],
+    [
+      commitCargoPatch,
+      refreshCargoTotals,
+      cargoTypeOptions,
+      cargoUnitOptions,
+      vehicleTypeOptions,
+      vehicleLengthOptions,
+    ],
   )
-
+  const handleSubmit = useCallback(async () => {
+    await Promise.all([baseInfoForm.validate(), senderForm.validate(), receiverForm.validate()])
+    const result = validateTableDataSource(() => tableRef.current?.getDataSource() ?? [], {
+      rules: CARGO_TABLE_RULES,
+      minRows: 1,
+      minRowsMessage: "请至少添加一条货物信息",
+    })
+    if (!result?.valid) return
+    setSubmitting(true)
+    const baseInfo = baseInfoForm.getFieldsValue(true)
+    const sender = senderForm.getFieldsValue(true)
+    const receiver = receiverForm.getFieldsValue(true)
+    const cargoList = tableRef.current?.getDataSource()
+    const orderId = searchParams.get("id")
+    // origin/destination 保持 AreaCascader 编码数组，后端拆成省市区三字段入库
+    const data = { ...baseInfo, ...sender, ...receiver, cargoList }
+    const params = orderId ? { orderId, ...data } : data
+    const request = orderId ? api.updateOrder : api.insertOrder
+    await request(params).finally(() => setSubmitting(false))
+    MessagePlugin.success(orderId ? "修改订单成功" : "新增订单成功")
+  }, [])
   return (
-    <ContentSection>
+    <ContentSection loading={loading}>
       <ContentSection.Content>
         <LayoutTitle title="基础信息" className="rounded-none bg-transparent">
           <div className="order-wizard-basic flex flex-col gap-3">
             <BasicForm
+              form={baseInfoForm}
               className="order-wizard-basic__form"
               formConfig={basicFormConfig}
               labelWidth={110}
               gutter={[16, 0]}
             />
             <PartyInfoPair
-              sender={<PartyInfoCard variant="sender" formConfig={senderFormConfig} />}
-              receiver={<PartyInfoCard variant="receiver" formConfig={receiverFormConfig} />}
+              sender={<PartyInfoCard variant="sender" formConfig={senderFormConfig} form={senderForm} />}
+              receiver={<PartyInfoCard variant="receiver" formConfig={receiverFormConfig} form={receiverForm} />}
             />
           </div>
         </LayoutTitle>
@@ -437,7 +534,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
               maxHeight: 480,
               scroll: CARGO_TABLE_SCROLL,
               hover: true,
-              tableLayout: "auto",
+              tableLayout: "fixed",
             }}
           />
           <div className="order-wizard-cargo__summary">
@@ -451,19 +548,8 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         </LayoutTitle>
       </ContentSection.Content>
       <ContentSection.Footer>
-        <Button>关闭</Button>
-        <Button
-          theme="primary"
-          onClick={() => {
-            const result = validateTableDataSource(() => tableRef.current?.getDataSource() ?? [], {
-              rules: CARGO_TABLE_RULES,
-              minRows: 1,
-              minRowsMessage: "请至少添加一条货物信息",
-            })
-            if (!result.valid) return
-            console.log(tableRef.current?.getDataSource())
-          }}
-        >
+        <Button theme="default">关闭</Button>
+        <Button theme="primary" loading={submitting} onClick={handleSubmit}>
           保存
         </Button>
       </ContentSection.Footer>

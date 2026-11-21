@@ -2,20 +2,22 @@ package com.tms.system.mapper;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
-import com.tms.system.domain.TmsCarrier;
+import com.tms.system.domain.dto.TmsCarrierQuery;
+import com.tms.system.domain.dto.TmsCarrierSaveReq;
+import com.tms.system.domain.vo.TmsCarrierVo;
 
 public interface TmsCarrierMapper {
-    List<TmsCarrier> selectCarrierList(TmsCarrier query);
+    List<TmsCarrierVo> selectCarrierList(TmsCarrierQuery query);
 
-    TmsCarrier selectCarrierById(Long carrierId);
+    TmsCarrierVo selectCarrierById(Long carrierId);
 
-    TmsCarrier checkCarrierNameUnique(@Param("carrierName") String carrierName);
+    TmsCarrierVo checkCarrierNameUnique(@Param("carrierName") String carrierName);
 
     String selectMaxCarrierNoByPrefix(@Param("prefix") String prefix);
 
-    int insertCarrier(TmsCarrier carrier);
+    int insertCarrier(TmsCarrierSaveReq carrier);
 
-    int updateCarrier(TmsCarrier carrier);
+    int updateCarrier(TmsCarrierSaveReq carrier);
 
     int deleteCarrierByIds(@Param("carrierIds") Long[] carrierIds);
 }

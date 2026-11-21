@@ -21,8 +21,8 @@ public class TmsOrderQuery extends BaseEntity {
     /** 关联运单号 */
     private String waybillNo;
 
-    /** 客户名称 */
-    private String customerName;
+    /** 客户ID */
+    private Long customerId;
 
     /** 订单状态 */
     private String orderStatus;

@@ -1,67 +1,94 @@
-//订单来源
-export const ORDER_SOURCE_OPTIONS = [
-  { label: "APP下单", value: "APP下单" },
-  { label: "手工添加", value: "手工添加" },
-  { label: "批量导入", value: "批量导入" },
-  { label: "其他", value: "其他" },
-]
-//运输类型
-export const TRANSPORT_TYPE_OPTIONS = [
-  { label: "整车", value: "ftl" },
-  { label: "零担", value: "ltl" },
-  { label: "快递", value: "express" },
-  { label: "同城配送", value: "city" },
-  { label: "专线", value: "line" },
-  { label: "冷链运输", value: "cold_chain" },
-  { label: "危险品运输", value: "dangerous" },
-  { label: "其他", value: "other" },
-]
-//货物类型
-export const CARGO_TYPE_OPTIONS = [
-  { label: "普货", value: "general" },
-  { label: "易碎品", value: "fragile" },
-  { label: "生鲜", value: "fresh" },
-  { label: "冷藏保鲜", value: "cold_chain" },
-  { label: "危险品", value: "dangerous" },
-  { label: "贵重物品", value: "valuable" },
-  { label: "液体", value: "liquid" },
-  { label: "大件/异形", value: "oversized" },
-  { label: "建材", value: "building" },
-  { label: "电子产品", value: "electronics" },
-  { label: "服装纺织", value: "apparel" },
-  { label: "其他", value: "other" },
-]
+/** 订单相关字典编码（与 sql/tms_order_dict_seed.sql 一致） */
+export const ORDER_DICT = {
+  orderSource: "tms_order_source",
+  transportType: "tms_transport_type",
+  cargoType: "tms_cargo_type",
+  cargoUnit: "tms_cargo_unit",
+  vehicleType: "tms_vehicle_type",
+  vehicleLength: "tms_vehicle_length",
+} as const
 
-/** 货物单位 */
-export const CARGO_UNIT_OPTIONS = [
-  { label: "箱", value: "箱" },
-  { label: "包", value: "包" },
-  { label: "扎", value: "扎" },
-  { label: "桶", value: "桶" },
-  { label: "袋", value: "袋" },
-  { label: "盒", value: "盒" },
-]
+/** 基础信息 baseInfoForm（value 为字典英文编码） */
+export const mockBaseInfo = {
+  orderNo: "", // 新增为空，自动生成
+  customerName: "杭州云启科技有限公司", // 注意：当前 Select 的 value 是 customerId，回显要用真实 customerId 才能选中
+  createTime: "",
+  orderSource: "manual",
+  transportType: "ftl",
+  expectArriveTime: "2026-11-19 20:00:00",
+}
 
-/** 车辆类型（公路货运常见车厢结构；value 与 label 相同，直接入库展示） */
-export const VEHICLE_TYPE_OPTIONS = [
-  { label: "厢式车", value: "厢式车" },
-  { label: "高栏车", value: "高栏车" },
-  { label: "平板车", value: "平板车" },
-  { label: "低栏车", value: "低栏车" },
-  { label: "飞翼车", value: "飞翼车" },
-  { label: "冷藏车", value: "冷藏车" },
-  { label: "集装箱", value: "集装箱" },
-  { label: "罐式车", value: "罐式车" },
-]
+/** 寄货人 senderForm */
+export const mockSender = {
+  senderName: "陈思远",
+  senderPhone: "13800001001",
+  origin: ["330000", "330100", "330106"], // 浙江省/杭州市/西湖区（AreaCascader 行政区划编码）
+  senderAddress: "浙江省杭州市西湖区文三路488号",
+}
 
-/** 车辆长度（车厢长度；value 与 label 相同，直接入库展示） */
-export const VEHICLE_LENGTH_OPTIONS = [
-  { label: "4.2米", value: "4.2米" },
-  { label: "5.2米", value: "5.2米" },
-  { label: "6.8米", value: "6.8米" },
-  { label: "7.6米", value: "7.6米" },
-  { label: "9.6米", value: "9.6米" },
-  { label: "13米", value: "13米" },
-  { label: "16.5米", value: "16.5米" },
-  { label: "17.5米", value: "17.5米" },
+/** 收货人 receiverForm */
+export const mockReceiver = {
+  receiverName: "刘婉清",
+  receiverPhone: "13800001002",
+  destination: ["310000", "310100", "310115"], // 上海市/市辖区/浦东新区
+  receiverAddress: "上海市浦东新区张杨路1881号",
+}
+
+/** 货物表 tableRef.setTableData（枚举字段存字典英文 value） */
+export const mockCargoList = [
+  {
+    id: "mock-cargo-1",
+    cargoName: "华为 MatePad 平板（纸箱装）",
+    cargoType: "general",
+    quantity: "120",
+    unit: "box",
+    weight: "3000",
+    vehicleType: "van",
+    vehicleLength: "9.6m",
+    vehicleCount: "1",
+  },
+  {
+    id: "mock-cargo-2",
+    cargoName: "冷冻带鱼（泡沫箱）",
+    cargoType: "refrigerated",
+    quantity: "80",
+    unit: "box",
+    weight: "4200",
+    vehicleType: "reefer",
+    vehicleLength: "7.6m",
+    vehicleCount: "1",
+  },
+  {
+    id: "mock-cargo-3",
+    cargoName: "建筑用螺纹钢 Φ12",
+    cargoType: "building_material",
+    quantity: "200",
+    unit: "bundle",
+    weight: "28000",
+    vehicleType: "high_sided",
+    vehicleLength: "13m",
+    vehicleCount: "2",
+  },
+  {
+    id: "mock-cargo-4",
+    cargoName: "白酒（玻璃瓶装）",
+    cargoType: "fragile",
+    quantity: "60",
+    unit: "box",
+    weight: "2400",
+    vehicleType: "van",
+    vehicleLength: "6.8m",
+    vehicleCount: "1",
+  },
+  {
+    id: "mock-cargo-5",
+    cargoName: "食用调和油",
+    cargoType: "liquid",
+    quantity: "40",
+    unit: "barrel",
+    weight: "8000",
+    vehicleType: "van",
+    vehicleLength: "9.6m",
+    vehicleCount: "1",
+  },
 ]

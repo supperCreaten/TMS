@@ -7,7 +7,7 @@ import ImportDialog from "@/components/ImportDialog"
 import InputText from "@/components/InputText"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type { CustomerDialogState, CustomerRow, FormConfig } from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import {
   COOP_STATUS_OPTIONS,
@@ -17,23 +17,9 @@ import {
 } from "../constants"
 import AddCustomer from "./components/AddCustomer"
 
-type CustomerRow = {
-  customerId: string | number
-  customerNo?: string
-  customerName?: string
-  customerLevel?: string
-  status?: string
+type CustomerTableRow = CustomerRow & {
   settleType?: string
-  contactName?: string
-  contactPhone?: string
   salesUserName?: string
-  createTime?: string
-}
-
-type CustomerDialogState = {
-  visible: boolean
-  title: string
-  customerId?: string
 }
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -47,7 +33,7 @@ function downloadBlob(blob: Blob, filename: string) {
 
 export default function ResourceCustomer() {
   const searchRef = useRef<SearchBoxRef>(null)
-  const tableRef = useRef<BasicTableRef<CustomerRow>>(null)
+  const tableRef = useRef<BasicTableRef<CustomerTableRow>>(null)
   const [selectedKeys, setSelectedKeys] = useState<Array<string | number>>([])
   const [dialog, setDialog] = useState<CustomerDialogState>({ visible: false, title: "" })
   const [importVisible, setImportVisible] = useState(false)
@@ -83,7 +69,7 @@ export default function ResourceCustomer() {
     [],
   )
 
-  const columns = useMemo<TableProps<CustomerRow>["columns"]>(
+  const columns = useMemo<TableProps<CustomerTableRow>["columns"]>(
     () => [
       { colKey: "row-select", type: "multiple", width: 50, fixed: "left" },
       { title: "客户编号", colKey: "customerNo", width: 150, align: "center", fixed: "left", ellipsis: true },
@@ -183,7 +169,7 @@ export default function ResourceCustomer() {
 
   const handleExport = async () => {
     try {
-      const blob = (await api.exportCustomer(buildSearchParams())) as Blob
+      const blob = await api.exportCustomer(buildSearchParams())
       downloadBlob(blob, "客户数据.xlsx")
       showMessage("导出成功", "success")
     } catch {
@@ -216,7 +202,7 @@ export default function ResourceCustomer() {
         </Button>
       </TableSection.ToolbarRight>
       <TableSection.Content>
-        <BasicTable<CustomerRow>
+        <BasicTable<CustomerTableRow>
           ref={tableRef}
           rowKey="customerId"
           columns={columns}
@@ -244,7 +230,7 @@ export default function ResourceCustomer() {
             visible={importVisible}
             title="导入客户"
             templateFileName="客户导入模板.xlsx"
-            downloadTemplate={() => api.downloadCustomerImportTemplate() as Promise<Blob>}
+            downloadTemplate={() => api.downloadCustomerImportTemplate()}
             importFile={(formData) => api.importCustomer(formData)}
             onClose={(imported) => {
               setImportVisible(false)

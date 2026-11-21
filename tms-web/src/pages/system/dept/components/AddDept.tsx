@@ -1,30 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Form, InputNumber, Radio, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
-import type { DeptDetail } from "@/api/modules/dept"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
-import type { FormConfig } from "@/interface"
+import type {
+  AddDeptProps,
+  DeptDetail,
+  DeptFormValues,
+  DeptTreeNode,
+  FormConfig,
+} from "@/interface"
 import { showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
 import InputText from "@/components/InputText"
 
-export type DeptTreeNode = {
-  deptId: string | number
-  deptName: string
-  hasChildren?: boolean
-  children?: DeptTreeNode[] | boolean
-}
-
-type DeptFormValues = {
-  parentId?: string | number
-  deptName?: string
-  orderNum?: number
-  leader?: string
-  phone?: string
-  email?: string
-  status?: string
-}
+export type { DeptTreeNode } from "@/interface"
 
 const STATUS_OPTIONS = [
   { label: "正常", value: "0" },
@@ -42,12 +32,12 @@ function asOptionValue(value?: string | number, fallback = "0") {
 }
 
 function toLazyDeptNodes(list: DeptTreeNode[] = []): DeptTreeNode[] {
-  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "deptId" }) as DeptTreeNode[]
+  return markLazyChildren(list as unknown as Array<Record<string, unknown>>, { idKey: "deptId" }) as unknown as DeptTreeNode[]
 }
 
 async function loadDeptChildren(parentId: string | number) {
   const data = await api.getDepts({ lazy: true, parentId })
-  return toLazyDeptNodes(Array.isArray(data) ? (data as DeptTreeNode[]) : [])
+  return toLazyDeptNodes(Array.isArray(data) ? (data as unknown as DeptTreeNode[]) : [])
 }
 
 function buildParentTreeData(list: DeptTreeNode[] = []): DeptTreeNode[] {
@@ -66,13 +56,7 @@ function mapDetailToForm(data?: DeptDetail): DeptFormValues {
   }
 }
 
-export type AddDeptProps = {
-  visible: boolean
-  title: string
-  deptId?: string
-  parentId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddDeptProps } from "@/interface"
 
 export default function AddDept(props: AddDeptProps) {
   const { visible, title, deptId, parentId, onClose } = props
@@ -166,7 +150,7 @@ export default function AddDept(props: AddDeptProps) {
         }
         if (!isEdit || !deptId) return
         const data = await api.getDeptDetail({ deptId })
-        form.setFieldsValue(mapDetailToForm(data))
+        form.setFieldsValue(mapDetailToForm(data || {}))
       } finally {
         setLoading(false)
       }

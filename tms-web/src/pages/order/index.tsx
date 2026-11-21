@@ -3,7 +3,7 @@ import TableSection from "@/components/TableSection"
 import { useMemo, useRef, useState } from "react"
 import { AddIcon, DeleteIcon, FileExportIcon } from "tdesign-icons-react"
 import { Button, TableProps, Tag } from "tdesign-react"
-import type { FormConfig } from "@/interface"
+import type { FormConfig, OrderRow } from "@/interface"
 import api from "@/api"
 import { getParams } from "@/utils/methods"
 import SearchBox, { SearchBoxRef } from "@/components/SearchBox"
@@ -12,33 +12,6 @@ import InputText from "@/components/InputText"
 import { useNavigate } from "react-router-dom"
 import useDict, { getDictLabel } from "@/hooks/use-dict"
 import { ORDER_DICT } from "./constants"
-interface OrderRow {
-  orderId: number
-  orderNo?: string
-  waybillNo?: string
-  origin?: string
-  destination?: string
-  customerId?: number | string
-  customerName?: string
-  orderStatus?: string
-  orderStatusText?: string
-  senderName?: string
-  senderPhone?: string
-  senderAddress?: string
-  receiverName?: string
-  receiverPhone?: string
-  receiverAddress?: string
-  expectArriveTime?: string
-  transportType?: string
-  cargoType?: string
-  totalQuantity?: number
-  totalWeight?: number
-  totalFee?: number
-  orderSource?: string
-  remark?: string
-  createBy?: string
-  createTime?: string
-}
 export default function order() {
   const searchRef = useRef<SearchBoxRef>(null)
   const tableRef = useRef<BasicTableRef<OrderRow>>(null)

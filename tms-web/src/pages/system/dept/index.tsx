@@ -6,37 +6,23 @@ import BasicTable, { type BasicTableRef } from "@/components/BasicTable"
 import MoreActions from "@/components/MoreActions"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type { DeptDialogState, DeptRow, FormConfig } from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
 import InputText from "@/components/InputText"
 import AddDept from "./components/AddDept"
 
-type DeptRow = {
-  deptId: string | number
+type DeptTableRow = DeptRow & {
   parentId?: string | number
-  deptName: string
-  orderNum?: number
   leader?: string
   phone?: string
   email?: string
-  status?: string | number
   createBy?: string
-  createTime?: string
   hasChildren?: boolean
-  /** 懒加载未展开时用 true 占位（运行时）；类型上兼容 TableRowData */
-  children?: DeptRow[]
-}
-
-type DeptDialogState = {
-  visible: boolean
-  title: string
-  deptId?: string
-  parentId?: string
 }
 
 /** 完整树（搜索场景） */
-function normalizeDeptTree(list: DeptRow[] = []): DeptRow[] {
+function normalizeDeptTree(list: DeptTableRow[] = []): DeptTableRow[] {
   return list.map((item) => {
     const children = Array.isArray(item.children) && item.children.length ? normalizeDeptTree(item.children) : undefined
     return {
@@ -49,13 +35,13 @@ function normalizeDeptTree(list: DeptRow[] = []): DeptRow[] {
 }
 
 /** 懒加载节点：有子级时 children=true（运行时标记） */
-function toLazyDeptRows(list: DeptRow[] = []): DeptRow[] {
-  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "deptId" }) as unknown as DeptRow[]
+function toLazyDeptTableRows(list: DeptTableRow[] = []): DeptTableRow[] {
+  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "deptId" }) as unknown as DeptTableRow[]
 }
 
 export default function DeptPage() {
   const searchRef = useRef<SearchBoxRef>(null)
-  const tableRef = useRef<BasicTableRef<DeptRow>>(null)
+  const tableRef = useRef<BasicTableRef<DeptTableRow>>(null)
   const loadingChildrenRef = useRef<Set<string>>(new Set())
   const [dialog, setDialog] = useState<DeptDialogState>({ visible: false, title: "" })
 
@@ -84,7 +70,7 @@ export default function DeptPage() {
     [],
   )
 
-  const columns = useMemo<TableProps<DeptRow>["columns"]>(
+  const columns = useMemo<TableProps<DeptTableRow>["columns"]>(
     () => [
       {
         title: "部门名称",
@@ -157,7 +143,7 @@ export default function DeptPage() {
     void tableRef.current?.refresh({ resetCurrent: true })
   }
 
-  const handleDelete = (row: DeptRow) => {
+  const handleDelete = (row: DeptTableRow) => {
     const dialogInstance = DialogPlugin.confirm({
       header: "提示",
       body: `是否确认删除名称为「${row.deptName}」的数据项？`,
@@ -176,7 +162,7 @@ export default function DeptPage() {
     })
   }
 
-  const loadChildDepts = async (row: DeptRow) => {
+  const loadChildDepts = async (row: DeptTableRow) => {
     const key = String(row.deptId)
     if ((row.children as unknown) !== true || loadingChildrenRef.current.has(key)) return
     loadingChildrenRef.current.add(key)
@@ -187,7 +173,7 @@ export default function DeptPage() {
         lazy: true,
         parentId: row.deptId,
       })
-      const children = toLazyDeptRows(Array.isArray(data) ? (data as DeptRow[]) : [])
+      const children = toLazyDeptTableRows(Array.isArray(data) ? (data as DeptTableRow[]) : [])
       tableRef.current?.getTable()?.appendTo(row.deptId, children as never)
     } finally {
       loadingChildrenRef.current.delete(key)
@@ -209,7 +195,7 @@ export default function DeptPage() {
         </Button>
       </TableSection.ToolbarRight>
       <TableSection.Content>
-        <BasicTable<DeptRow>
+        <BasicTable<DeptTableRow>
           ref={tableRef}
           rowKey="deptId"
           columns={columns}
@@ -218,11 +204,11 @@ export default function DeptPage() {
             const keyword = String(params.deptName ?? "").trim()
             if (keyword) {
               const data = await api.getDepts(params)
-              const rows = normalizeDeptTree(Array.isArray(data) ? (data as DeptRow[]) : [])
+              const rows = normalizeDeptTree(Array.isArray(data) ? (data as DeptTableRow[]) : [])
               return { rows, total: rows.length }
             }
             const data = await api.getDepts({ ...params, lazy: true, parentId: 0 })
-            const rows = toLazyDeptRows(Array.isArray(data) ? (data as DeptRow[]) : [])
+            const rows = toLazyDeptTableRows(Array.isArray(data) ? (data as DeptTableRow[]) : [])
             return { rows, total: rows.length }
           }}
           searchParams={() => getParams(searchRef.current?.getFieldsValue(true) ?? {})}

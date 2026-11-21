@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react"
 import { Form, InputNumber, Loading, Select } from "tdesign-react"
 import api from "@/api"
-import type { CustomerDetail } from "@/api/modules/customer"
 import AreaCascader from "@/components/AreaCascader"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import InputText from "@/components/InputText"
 import LayoutTitle from "@/components/LayoutTitle"
-import type { FormConfig } from "@/interface"
+import type { AddCustomerProps, CustomerDetail, CustomerFormValues, FormConfig } from "@/interface"
 import { showMessage } from "@/utils/methods"
 import FileUrlUpload from "../../components/FileUrlUpload"
 import {
@@ -19,37 +18,12 @@ import {
   SETTLE_TYPE_OPTIONS,
 } from "../../constants"
 
-type CustomerFormValues = {
-  customerName?: string
-  shortName?: string
-  industry?: string
-  customerLevel?: string
+type CustomerFormModel = Omit<CustomerFormValues, "customerTags" | "region"> & {
   customerTags?: string[]
   region?: string[]
-  companyAddress?: string
-  status?: string
-  customerSource?: string
-  salesUserName?: string
-  businessLicenseNo?: string
-  businessLicenseUrl?: string
-  contactName?: string
-  contactPhone?: string
-  contactDept?: string
-  contactTitle?: string
-  contactEmail?: string
-  contactWechat?: string
-  settleType?: string
-  creditLimit?: number
-  payPeriodDays?: number
-  invoiceTitle?: string
-  taxNo?: string
-  bankName?: string
-  bankAccountName?: string
-  bankAccountNo?: string
-  remark?: string
 }
 
-const initialValues: CustomerFormValues = {
+const initialValues: CustomerFormModel = {
   status: "0",
   customerLevel: "normal",
   settleType: "monthly",
@@ -66,7 +40,7 @@ function joinCsv(value?: string[]) {
   return value.join(",")
 }
 
-function mapDetailToForm(data?: CustomerDetail): CustomerFormValues {
+function mapDetailToForm(data?: CustomerDetail): CustomerFormModel {
   return {
     ...initialValues,
     ...data,
@@ -76,12 +50,7 @@ function mapDetailToForm(data?: CustomerDetail): CustomerFormValues {
   }
 }
 
-export type AddCustomerProps = {
-  visible: boolean
-  title: string
-  customerId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddCustomerProps } from "@/interface"
 
 export default function AddCustomer(props: AddCustomerProps) {
   const { visible, title, customerId, onClose } = props
@@ -284,7 +253,7 @@ export default function AddCustomer(props: AddCustomerProps) {
         financeForm.setFieldsValue({ ...initialValues })
         if (!isEdit || !customerId) return
         const data = await api.getCustomerDetail(customerId)
-        const formValues = mapDetailToForm(data)
+        const formValues = mapDetailToForm(data || {})
         baseInfoForm.setFieldsValue(formValues)
         contactForm.setFieldsValue(formValues)
         financeForm.setFieldsValue(formValues)
@@ -304,7 +273,7 @@ export default function AddCustomer(props: AddCustomerProps) {
     try {
       const values = [baseInfoForm, contactForm, financeForm]
         .map((form) => form.getFieldsValue(true))
-        .reduce((acc, curr) => ({ ...acc, ...curr }), {}) as CustomerFormValues
+        .reduce((acc, curr) => ({ ...acc, ...curr }), {}) as CustomerFormModel
       const payload: Record<string, unknown> = {
         ...(isEdit && customerId ? { customerId } : {}),
         ...values,

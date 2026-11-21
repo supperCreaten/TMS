@@ -7,18 +7,11 @@ import { aesEncrypt } from "@/utils/auth";
 import { showMessage } from "@/utils/methods";
 import InputText from "@/components/InputText";
 import PasswordStrengthHint from "./PasswordStrengthHint";
+import type { ChangePasswordFormProps, ChangePasswordFormValues } from "@/interface";
+
+export type { ChangePasswordFormProps, ChangePasswordFormValues } from "@/interface";
 
 const { FormItem } = Form;
-
-type ChangePasswordFormValues = {
-  account: string;
-  password: string;
-  confirmPassword: string;
-};
-
-type ChangePasswordFormProps = {
-  onBackToLogin?: () => void;
-};
 
 export default function ChangePasswordForm({ onBackToLogin }: ChangePasswordFormProps) {
   const [form] = Form.useForm();

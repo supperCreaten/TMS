@@ -9,15 +9,9 @@ import type { FormConfig } from "@/interface"
 import { aesEncrypt, setAccessToken } from "@/utils/auth"
 import { showMessage } from "@/utils/methods"
 import InputText from "@/components/InputText"
+import type { LoginFormProps, LoginFormValues } from "@/interface"
 
-type LoginFormValues = {
-  account: string
-  password: string
-}
-
-type LoginFormProps = {
-  onForgotPassword?: () => void
-}
+export type { LoginFormProps, LoginFormValues } from "@/interface"
 
 const rules: FormRules<LoginFormValues> = {
   account: [{ required: true, message: "请输入账号", type: "error" }],

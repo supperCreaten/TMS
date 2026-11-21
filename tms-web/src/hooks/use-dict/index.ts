@@ -1,27 +1,24 @@
 import { useEffect, useMemo, useState } from "react"
+import type { DictOption } from "@/interface"
 import api from "@/api"
 
-export type DictOption = {
-  label: string
-  value: string
-  id: string
-}
+export type { DictOption } from "@/interface"
 
 type DictRecord = Record<string, DictOption[]>
-
-type DictItem = {
-  dictLabel?: string
-  dictValue?: string
-  id?: string | number
-  dictId?: string | number
-}
 
 /** 进程内缓存，避免同一字典编码重复请求 */
 const dictCache: DictRecord = {}
 
-function normalizeDictList(response: unknown): DictOption[] {
+function normalizeDictList(
+  response: Array<{
+    dictLabel?: string
+    dictValue?: string
+    id?: string | number
+    dictId?: string | number
+  }>,
+): DictOption[] {
   if (!Array.isArray(response)) return []
-  return response.map((item: DictItem) => ({
+  return response.map((item) => ({
     label: item?.dictLabel ?? "",
     value: item?.dictValue ?? "",
     id: String(item?.id ?? item?.dictId ?? ""),
@@ -71,7 +68,7 @@ export default function useDict(codes: string[]) {
           if (dictCache[code]) {
             return [code, dictCache[code]] as const
           }
-          const response = await api.getDictByCode({ dictCode: code })
+          const response = (await api.getDictByCode({ dictCode: code })) || []
           const options = normalizeDictList(response)
           dictCache[code] = options
           return [code, options] as const

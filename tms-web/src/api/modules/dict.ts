@@ -1,13 +1,15 @@
+import type { DictDetail, DictItem, TablePageResult } from "@/interface"
+import type { TableRowData } from "tdesign-react"
 import request from "@/utils/service"
 
-/** 字典详情 */
-export type DictDetail = Record<string, unknown>
+export type { DictDetail, DictItem }
 
 export default {
-  getDictPageQuery: (data: Record<string, unknown>) => request.post("/api/dict/pageQuery", data),
-  getDictByCode: (data: { dictCode: string }) => request.post("/api/dict/allDict", data),
-  insertDict: (data: Record<string, unknown>) => request.post("/api/dict/insert", data),
-  updateDict: (data: Record<string, unknown>) => request.post("/api/dict/update", data),
+  getDictPageQuery: <T extends TableRowData>(data: Record<string, unknown>) =>
+    request.post<TablePageResult<T>>("/api/dict/pageQuery", data),
+  getDictByCode: (data: { dictCode: string }) => request.post<DictItem[]>("/api/dict/allDict", data),
+  insertDict: (data: Record<string, unknown>) => request.post<void>("/api/dict/insert", data),
+  updateDict: (data: Record<string, unknown>) => request.post<void>("/api/dict/update", data),
   getDictDetail: (id: string) => request.post<DictDetail>(`/api/dict/queryById/${id}`),
-  deleteDict: (data: Record<string, unknown>) => request.post("/api/dict/delete", data),
+  deleteDict: (data: Record<string, unknown>) => request.post<void>("/api/dict/delete", data),
 }

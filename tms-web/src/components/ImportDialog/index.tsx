@@ -11,28 +11,10 @@ import { Button, Upload, type UploadFile, type UploadProps } from "tdesign-react
 import { clsx } from "clsx"
 import BasicDialog from "@/components/BasicDialog"
 import { showMessage } from "@/utils/methods"
+import type { ImportCommitResult, ImportDialogProps } from "@/interface"
 import "./index.css"
 
-export type ImportCommitResult = {
-  totalCount?: number
-  successCount?: number
-  failCount?: number
-  message?: string
-  errorFileName?: string
-  errorFileBase64?: string
-}
-
-export type ImportDialogProps = {
-  visible: boolean
-  title?: string
-  /** 模板下载文件名 */
-  templateFileName: string
-  onClose: (imported?: boolean) => void
-  /** 下载导入模板 */
-  downloadTemplate: () => Promise<Blob>
-  /** 提交导入（FormData 含 file、partialCommit） */
-  importFile: (formData: FormData) => Promise<ImportCommitResult>
-}
+export type { ImportCommitResult, ImportDialogProps } from "@/interface"
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob)

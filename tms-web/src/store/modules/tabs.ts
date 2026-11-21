@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { ReactNode } from "react";
-import type { TabItemProps as SharedTabItemProps } from "@/interface";
+import type { TabItemProps as SharedTabItemProps, TabStateType } from "@/interface";
 // import { persist } from "zustand/middleware";
 
 /**
@@ -9,14 +8,7 @@ import type { TabItemProps as SharedTabItemProps } from "@/interface";
  */
 export type TabItemProps = SharedTabItemProps;
 
-export interface TabStateType extends Omit<TabItemProps, "label"> {
-  label: string;
-  /**
-   * @zh 标签页的新标题，用于修改标签页的标题
-   * @en The new title of the tab, used to modify the title of the tab.
-   */
-  newTabTitle?: ReactNode;
-}
+export type { TabStateType } from "@/interface";
 
 const homePath = import.meta.env.VITE_BASE_HOME_PATH;
 

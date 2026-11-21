@@ -1,22 +1,14 @@
 import BasicForm from "@/components/BasicForm"
-import type { FormConfig } from "@/interface"
+import type { PartyInfoCardProps, PartyVariant } from "@/interface"
 import type { ReactNode } from "react"
 import { cn } from "@/utils/methods"
 import "./index.css"
-import { InternalFormInstance } from "tdesign-react"
 
-type PartyVariant = "sender" | "receiver"
+export type { PartyInfoCardProps, PartyVariant } from "@/interface"
 
 const VARIANT_META: Record<PartyVariant, { title: string; hint: string }> = {
   sender: { title: "寄货人信息", hint: "发货方" },
   receiver: { title: "收货人信息", hint: "收货方" },
-}
-
-type PartyInfoCardProps = {
-  variant: PartyVariant
-  formConfig: FormConfig[]
-  className?: string
-  form: InternalFormInstance
 }
 
 export function PartyInfoCard(props: PartyInfoCardProps) {

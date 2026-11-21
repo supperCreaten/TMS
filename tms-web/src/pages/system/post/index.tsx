@@ -5,26 +5,10 @@ import api from "@/api"
 import BasicTable, { type BasicTableRef } from "@/components/BasicTable"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type { FormConfig, PostDialogState, PostRow } from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import InputText from "@/components/InputText"
 import AddPost from "./components/AddPost"
-
-type PostRow = {
-  postId: string | number
-  postCode: string
-  postName: string
-  postSort?: number
-  status?: string | number
-  createTime?: string
-  remark?: string
-}
-
-type PostDialogState = {
-  visible: boolean
-  title: string
-  postId?: string
-}
 
 export default function PostPage() {
   const searchRef = useRef<SearchBoxRef>(null)

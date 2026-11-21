@@ -16,63 +16,18 @@ import BasicTable, { type BasicTableRef } from "@/components/BasicTable"
 import MoreActions from "@/components/MoreActions"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type {
+  DeptTreeNode,
+  FormConfig,
+  UserPageState,
+  UserRow,
+} from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
 import InputText from "@/components/InputText"
 import AddUser from "./components/AddUser"
 import AuthRole from "./components/AuthRole"
 import ResetPwd from "./components/ResetPwd"
-
-type UserRow = {
-  userId: string | number
-  userName?: string
-  account?: string
-  nickName?: string
-  deptName?: string
-  postName?: string
-  phone?: string
-  phonenumber?: string
-  status?: string | number
-  createTime?: string
-}
-
-type DeptTreeNode = {
-  deptId: string
-  deptName: string
-  hasChildren?: boolean
-  children?: DeptTreeNode[] | boolean
-}
-
-type UserDialogState = {
-  visible: boolean
-  title: string
-  userId?: string
-  defaultDeptId?: string
-}
-
-type AuthDialogState = {
-  visible: boolean
-  userId?: string
-  userName?: string
-}
-
-type ResetPwdDialogState = {
-  visible: boolean
-  userId?: string
-  userName?: string
-  account?: string
-}
-
-type UserPageState = {
-  deptKeyword: string
-  deptTree: DeptTreeNode[]
-  selectedDeptId?: string
-  selectedKeys: Array<string | number>
-  userDialog: UserDialogState
-  authDialog: AuthDialogState
-  resetPwdDialog: ResetPwdDialogState
-}
 
 const initialUserPageState: UserPageState = {
   deptKeyword: "",

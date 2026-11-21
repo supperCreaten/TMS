@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Form, InputNumber, Radio, Select, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
-import type { MenuDetail } from "@/api/modules/menu"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import { createIconList } from "@/icons"
-import type { FormConfig } from "@/interface"
+import type { AddMenuProps, FormConfig, MenuDetail, MenuFormValues, MenuTreeNode } from "@/interface"
 import { showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
 import {
@@ -24,28 +23,9 @@ import {
 import { MENU_TYPE } from "@/constants/menu"
 import InputText from "@/components/InputText"
 
-export type MenuTreeNode = {
-  menuId: string | number
-  menuName: string
-  hasChildren?: boolean
-  children?: MenuTreeNode[] | boolean
-}
+export type { MenuTreeNode } from "@/interface"
 
 const SELECT_SCROLL = { type: "virtual" as const }
-
-type MenuFormValues = {
-  parentId?: string | number
-  menuType?: number
-  icon?: string
-  menuName?: string
-  orderNum?: number
-  isFrame?: string
-  path?: string
-  perms?: string
-  keepAlive?: string
-  hidden?: string
-  status?: string
-}
 
 const ICON_OPTIONS = createIconList().map((item) => ({
   label: item.label,
@@ -116,12 +96,7 @@ function buildSubmitPayload(values?: MenuFormValues, menuId?: string) {
   }
 }
 
-export type AddMenuProps = {
-  visible: boolean
-  title: string
-  menuId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddMenuProps } from "@/interface"
 
 export default function AddMenu(props: AddMenuProps) {
   const { visible, title, menuId, onClose } = props
@@ -275,7 +250,7 @@ export default function AddMenu(props: AddMenuProps) {
         }
         if (!isEdit || !menuId) return
         const data = await api.getMenuDetail({ menuId })
-        form.setFieldsValue(mapDetailToForm(data))
+        form.setFieldsValue(mapDetailToForm(data || {}))
       } finally {
         setLoading(false)
       }

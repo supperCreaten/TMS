@@ -1,12 +1,6 @@
-export type PasswordStrengthLevel = "empty" | "weak" | "medium" | "strong";
+import type { PasswordStrengthLevel, PasswordStrengthResult } from "@/interface";
 
-export type PasswordStrengthResult = {
-  level: PasswordStrengthLevel;
-  score: number;
-  percent: number;
-  label: string;
-  tips: string[];
-};
+export type { PasswordStrengthLevel, PasswordStrengthResult } from "@/interface";
 
 const LEVEL_META: Record<
   Exclude<PasswordStrengthLevel, "empty">,

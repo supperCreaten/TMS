@@ -1,13 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type { UserInfoPayload } from "@/interface";
 import api from "@/api";
 import { logout } from "@/utils/auth";
 import { unwrapRecord } from "@/utils/service";
 
-export type UserInfoPayload = {
-  userInfo: Record<string, unknown>;
-  permissions: string[];
-  roles: string[];
-};
+export type { UserInfoPayload } from "@/interface";
 
 /** 兼容若依结构 { permissions, roles, user } 与旧版扁平 user */
 export function normalizeUserInfoRes(res?: unknown): UserInfoPayload {

@@ -1,15 +1,10 @@
 import { useState, type MouseEvent, type ReactNode } from "react"
 import { Button, Dialog, type DialogProps } from "tdesign-react"
 import { clsx } from "clsx"
+import type { BasicDialogProps } from "@/interface"
 import "./index.css"
 
-export type BasicDialogProps = Omit<DialogProps, "onConfirm"> & {
-  /** 异步确认；传入后由组件管理 loading（可用 confirmLoading 覆盖展示） */
-  onSubmit?: () => void | Promise<void>
-  onConfirm?: DialogProps["onConfirm"]
-  confirmText?: string
-  cancelText?: string
-}
+export type { BasicDialogProps } from "@/interface"
 
 function renderHeader(header: DialogProps["header"]): ReactNode {
   if (header === false || header == null) return false

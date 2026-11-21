@@ -7,7 +7,7 @@ import ImportDialog from "@/components/ImportDialog"
 import InputText from "@/components/InputText"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type { CarrierDialogState, CarrierRow, FormConfig } from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import {
   CARRIER_LEVEL_OPTIONS,
@@ -18,26 +18,11 @@ import {
 } from "../constants"
 import AddCarrier from "./components/AddCarrier"
 
-type CarrierRow = {
-  carrierId: string | number
-  carrierNo?: string
-  carrierName?: string
+type CarrierTableRow = CarrierRow & {
   companyAddress?: string
-  carrierType?: string
-  carrierLevel?: string
   contractSigned?: string
   driverCount?: number
   vehicleCount?: number
-  contactName?: string
-  contactPhone?: string
-  status?: string
-  createTime?: string
-}
-
-type CarrierDialogState = {
-  visible: boolean
-  title: string
-  carrierId?: string
 }
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -51,7 +36,7 @@ function downloadBlob(blob: Blob, filename: string) {
 
 export default function ResourceCarrier() {
   const searchRef = useRef<SearchBoxRef>(null)
-  const tableRef = useRef<BasicTableRef<CarrierRow>>(null)
+  const tableRef = useRef<BasicTableRef<CarrierTableRow>>(null)
   const [selectedKeys, setSelectedKeys] = useState<Array<string | number>>([])
   const [dialog, setDialog] = useState<CarrierDialogState>({ visible: false, title: "" })
   const [importVisible, setImportVisible] = useState(false)
@@ -92,7 +77,7 @@ export default function ResourceCarrier() {
     [],
   )
 
-  const columns = useMemo<TableProps<CarrierRow>["columns"]>(
+  const columns = useMemo<TableProps<CarrierTableRow>["columns"]>(
     () => [
       { colKey: "row-select", type: "multiple", width: 50, fixed: "left" },
       { title: "承运商编号", colKey: "carrierNo", width: 150, align: "center", fixed: "left", ellipsis: true },
@@ -212,7 +197,7 @@ export default function ResourceCarrier() {
 
   const handleExport = async () => {
     try {
-      const blob = (await api.exportCarrier(buildSearchParams())) as Blob
+      const blob = await api.exportCarrier(buildSearchParams())
       downloadBlob(blob, "承运商数据.xlsx")
       showMessage("导出成功", "success")
     } catch {
@@ -245,7 +230,7 @@ export default function ResourceCarrier() {
         </Button>
       </TableSection.ToolbarRight>
       <TableSection.Content>
-        <BasicTable<CarrierRow>
+        <BasicTable<CarrierTableRow>
           ref={tableRef}
           rowKey="carrierId"
           columns={columns}
@@ -273,7 +258,7 @@ export default function ResourceCarrier() {
             visible={importVisible}
             title="导入承运商"
             templateFileName="承运商导入模板.xlsx"
-            downloadTemplate={() => api.downloadCarrierImportTemplate() as Promise<Blob>}
+            downloadTemplate={() => api.downloadCarrierImportTemplate()}
             importFile={(formData) => api.importCarrier(formData)}
             onClose={(imported) => {
               setImportVisible(false)

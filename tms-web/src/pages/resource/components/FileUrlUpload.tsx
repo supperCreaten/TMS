@@ -21,21 +21,21 @@ export default function FileUrlUpload(props: FileUrlUploadProps) {
     const uploadFile = file as UploadFile
     const blob = uploadFile.raw
     if (!blob) {
-      return { status: "fail", error: "文件无效" }
+      return { status: "fail", error: "文件无效", response: {} }
     }
     const formData = new FormData()
     formData.append("file", blob)
     setLoading(true)
     try {
-      const data = (await api.uploadApi(formData)) as { url?: string }
-      const url = data?.url
+      const data = (await api.uploadApi(formData)) || {}
+      const url = data.url
       if (!url) {
-        return { status: "fail", error: "上传失败" }
+        return { status: "fail", error: "上传失败", response: {} }
       }
       onChange?.(url)
       return { status: "success", response: { url } }
     } catch {
-      return { status: "fail", error: "上传失败" }
+      return { status: "fail", error: "上传失败", response: {} }
     } finally {
       setLoading(false)
     }

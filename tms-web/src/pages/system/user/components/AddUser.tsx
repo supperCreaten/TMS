@@ -2,39 +2,22 @@ import { useEffect, useMemo, useReducer } from "react"
 import InputText from "@/components/InputText"
 import { Form, Radio, Select, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
-import type { UserDetail } from "@/api/modules/user"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import PasswordStrength from "@/components/PasswordStrength"
 import { validatePasswordStrength } from "@/components/PasswordStrength/validate"
-import type { FormConfig } from "@/interface"
+import type {
+  AddUserProps,
+  AddUserState as AddUserStateBase,
+  DeptTreeNode,
+  FormConfig,
+  UserDetail,
+  UserFormValues,
+} from "@/interface"
 import { showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
 
-type DeptTreeNode = {
-  deptId: string | number
-  deptName: string
-  hasChildren?: boolean
-  children?: DeptTreeNode[] | boolean
-}
-
 const SELECT_SCROLL = { type: "virtual" as const }
-
-type OptionItem = { label: string; value: string }
-
-type UserFormValues = {
-  nickName?: string
-  deptId?: string
-  phone?: string
-  email?: string
-  account?: string
-  password?: string
-  sex?: string
-  status?: string
-  postId?: string
-  roleIds?: string[]
-  remark?: string
-}
 
 const SEX_OPTIONS = [
   { label: "男", value: "男" },
@@ -54,13 +37,7 @@ const initialValues: UserFormValues = {
   remark: "",
 }
 
-type AddUserState = {
-  loading: boolean
-  submitting: boolean
-  deptTree: DeptTreeNode[]
-  postOptions: OptionItem[]
-  roleOptions: OptionItem[]
-}
+type AddUserState = AddUserStateBase & { submitting: boolean }
 
 const initialAddUserState: AddUserState = {
   loading: false,
@@ -79,12 +56,12 @@ function asOptionValue(value?: string | number, fallback = "") {
 }
 
 function toLazyDeptNodes(list: DeptTreeNode[] = []): DeptTreeNode[] {
-  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "deptId" }) as DeptTreeNode[]
+  return markLazyChildren(list as unknown as Array<Record<string, unknown>>, { idKey: "deptId" }) as unknown as DeptTreeNode[]
 }
 
 const loadDeptChildren = async (parentId: string | number) => {
   const data = await api.getDepts({ lazy: true, parentId, status: "0" })
-  return toLazyDeptNodes(Array.isArray(data) ? (data as DeptTreeNode[]) : [])
+  return toLazyDeptNodes(Array.isArray(data) ? (data as unknown as DeptTreeNode[]) : [])
 }
 
 function mapDetailToForm(data?: UserDetail): UserFormValues {
@@ -103,13 +80,7 @@ function mapDetailToForm(data?: UserDetail): UserFormValues {
   }
 }
 
-export type AddUserProps = {
-  visible: boolean
-  title: string
-  userId?: string
-  defaultDeptId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddUserProps } from "@/interface"
 
 export default function AddUser(props: AddUserProps) {
   const { visible, title, userId, defaultDeptId, onClose } = props
@@ -306,7 +277,7 @@ export default function AddUser(props: AddUserProps) {
 
         if (!isEdit || !userId) return
         const detail = await api.getUserDetail({ userId })
-        form.setFieldsValue(mapDetailToForm(detail))
+        form.setFieldsValue(mapDetailToForm(detail || {}))
       } finally {
         dispatch({ loading: false })
       }

@@ -6,7 +6,7 @@ import BasicTable, { type BasicTableRef } from "@/components/BasicTable"
 import MoreActions from "@/components/MoreActions"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type { FormConfig, MenuDialogState, MenuRow } from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
 import InputText from "@/components/InputText"
@@ -14,30 +14,16 @@ import AddMenu from "./components/AddMenu"
 import { renderMenuIcon } from "./components/renderMenuIcon"
 import { MENU_TYPE_LABEL } from "./constants"
 
-type MenuRow = {
-  menuId: string | number
-  menuName: string
+type MenuTableRow = MenuRow & {
   icon?: string
-  orderNum?: number
   perms?: string
-  menuType?: string | number
-  status?: string | number
   createBy?: string
-  createTime?: string
   updateBy?: string
   updateTime?: string
   hasChildren?: boolean
-  /** 懒加载未展开时用 true 占位（运行时）；类型上兼容 TableRowData */
-  children?: MenuRow[]
 }
 
-type MenuDialogState = {
-  visible: boolean
-  title: string
-  menuId?: string
-}
-
-function normalizeMenuTree(list: MenuRow[] = []): MenuRow[] {
+function normalizeMenuTree(list: MenuTableRow[] = []): MenuTableRow[] {
   return list.map((item) => {
     const children = Array.isArray(item.children) && item.children.length ? normalizeMenuTree(item.children) : undefined
     return {
@@ -48,13 +34,13 @@ function normalizeMenuTree(list: MenuRow[] = []): MenuRow[] {
   })
 }
 
-function toLazyMenuRows(list: MenuRow[] = []): MenuRow[] {
-  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "menuId" }) as unknown as MenuRow[]
+function toLazyMenuRows(list: MenuTableRow[] = []): MenuTableRow[] {
+  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "menuId" }) as unknown as MenuTableRow[]
 }
 
 export default function MenuPage() {
   const searchRef = useRef<SearchBoxRef>(null)
-  const tableRef = useRef<BasicTableRef<MenuRow>>(null)
+  const tableRef = useRef<BasicTableRef<MenuTableRow>>(null)
   const loadingChildrenRef = useRef<Set<string>>(new Set())
   const [dialog, setDialog] = useState<MenuDialogState>({ visible: false, title: "" })
   const formConfig = useMemo<FormConfig[]>(
@@ -82,7 +68,7 @@ export default function MenuPage() {
     [],
   )
 
-  const columns = useMemo<TableProps<MenuRow>["columns"]>(
+  const columns = useMemo<TableProps<MenuTableRow>["columns"]>(
     () => [
       {
         title: "菜单名称",
@@ -174,7 +160,7 @@ export default function MenuPage() {
     void tableRef.current?.refresh({ resetCurrent: true })
   }
 
-  const handleDelete = (row: MenuRow) => {
+  const handleDelete = (row: MenuTableRow) => {
     const dialogInstance = DialogPlugin.confirm({
       header: "提示",
       body: `是否确认删除名称为「${row.menuName}」的数据项？`,
@@ -193,7 +179,7 @@ export default function MenuPage() {
     })
   }
 
-  const loadChildMenus = async (row: MenuRow) => {
+  const loadChildMenus = async (row: MenuTableRow) => {
     const key = String(row.menuId)
     if ((row.children as unknown) !== true || loadingChildrenRef.current.has(key)) return
     loadingChildrenRef.current.add(key)
@@ -204,7 +190,7 @@ export default function MenuPage() {
         lazy: true,
         parentId: row.menuId,
       })
-      const children = toLazyMenuRows(Array.isArray(data) ? (data as MenuRow[]) : [])
+      const children = toLazyMenuRows(Array.isArray(data) ? (data as MenuTableRow[]) : [])
       tableRef.current?.getTable()?.appendTo(row.menuId, children as never)
     } finally {
       loadingChildrenRef.current.delete(key)
@@ -228,7 +214,7 @@ export default function MenuPage() {
         </Button>
       </TableSection.ToolbarRight>
       <TableSection.Content>
-        <BasicTable<MenuRow>
+        <BasicTable<MenuTableRow>
           ref={tableRef}
           rowKey="menuId"
           columns={columns}
@@ -237,11 +223,11 @@ export default function MenuPage() {
             const keyword = String(params.menuName ?? "").trim()
             if (keyword) {
               const data = await api.getMenus(params)
-              const rows = normalizeMenuTree(Array.isArray(data) ? (data as MenuRow[]) : [])
+              const rows = normalizeMenuTree(Array.isArray(data) ? (data as MenuTableRow[]) : [])
               return { rows, total: rows.length }
             }
             const data = await api.getMenus({ ...params, lazy: true, parentId: 0 })
-            const rows = toLazyMenuRows(Array.isArray(data) ? (data as MenuRow[]) : [])
+            const rows = toLazyMenuRows(Array.isArray(data) ? (data as MenuTableRow[]) : [])
             return { rows, total: rows.length }
           }}
           searchParams={() => getParams(searchRef.current?.getFieldsValue(true) ?? {})}

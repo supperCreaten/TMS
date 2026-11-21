@@ -2,28 +2,11 @@ import { useEffect, useMemo, useState } from "react"
 import InputText from "@/components/InputText"
 import { Form, InputNumber, Radio, TreeSelect, type TreeSelectProps } from "tdesign-react"
 import api from "@/api"
-import type { PostDetail } from "@/api/modules/post"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
-import type { FormConfig } from "@/interface"
+import type { AddPostProps, DeptTreeNode, FormConfig, PostDetail, PostFormValues } from "@/interface"
 import { showMessage } from "@/utils/methods"
 import { markLazyChildren } from "@/utils/tree/lazy"
-
-type DeptTreeNode = {
-  deptId: string | number
-  deptName: string
-  hasChildren?: boolean
-  children?: DeptTreeNode[] | boolean
-}
-
-type PostFormValues = {
-  postName?: string
-  postCode?: string
-  deptId?: string
-  postSort?: number
-  status?: string
-  remark?: string
-}
 
 const STATUS_OPTIONS = [
   { label: "正常", value: "0" },
@@ -41,12 +24,12 @@ function asOptionValue(value?: string | number, fallback = "0") {
 }
 
 function toLazyDeptNodes(list: DeptTreeNode[] = []): DeptTreeNode[] {
-  return markLazyChildren(list as Array<Record<string, unknown>>, { idKey: "deptId" }) as DeptTreeNode[]
+  return markLazyChildren(list as unknown as Array<Record<string, unknown>>, { idKey: "deptId" }) as unknown as DeptTreeNode[]
 }
 
 async function loadDeptChildren(parentId: string | number) {
   const data = await api.getDepts({ lazy: true, parentId, status: "0" })
-  return toLazyDeptNodes(Array.isArray(data) ? (data as DeptTreeNode[]) : [])
+  return toLazyDeptNodes(Array.isArray(data) ? (data as unknown as DeptTreeNode[]) : [])
 }
 
 function mapDetailToForm(data?: PostDetail): PostFormValues {
@@ -60,12 +43,7 @@ function mapDetailToForm(data?: PostDetail): PostFormValues {
   }
 }
 
-export type AddPostProps = {
-  visible: boolean
-  title: string
-  postId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddPostProps } from "@/interface"
 
 export default function AddPost(props: AddPostProps) {
   const { visible, title, postId, onClose } = props
@@ -142,7 +120,7 @@ export default function AddPost(props: AddPostProps) {
         setDeptTree(await loadDeptChildren(0))
         if (!isEdit || !postId) return
         const data = await api.getPostDetail({ postId })
-        form.setFieldsValue(mapDetailToForm(data))
+        form.setFieldsValue(mapDetailToForm(data || {}))
       } finally {
         setLoading(false)
       }

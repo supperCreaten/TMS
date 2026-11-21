@@ -1,11 +1,6 @@
-export interface VisibleDomRect {
-  bottom: number;
-  height: number;
-  left: number;
-  right: number;
-  top: number;
-  width: number;
-}
+import type { VisibleDomRect } from "@/interface"
+
+export type { VisibleDomRect } from "@/interface"
 
 /**
  * @zh 获取元素在可视区域的矩形

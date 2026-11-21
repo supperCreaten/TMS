@@ -1,4 +1,5 @@
-import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
+import type { AppRequest } from "@/interface";
 import { getAccessToken, setAccessToken, logout } from "@/utils/auth";
 import { showMessage } from "@/utils/methods";
 import { isSvgString } from "@/utils/is";
@@ -27,19 +28,7 @@ type QueueItem = {
 
 type ApiBody = { code?: number; data?: string; msg?: string };
 
-/**
- * 响应拦截器已 unwrapData，请求方法直接返回业务 data，而不是 AxiosResponse。
- * 默认泛型为 unknown，调用处按需传入业务类型。
- */
-export type AppRequest = {
-  get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  head<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  options<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
-  put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
-  patch<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T>;
-};
+export type { AppRequest } from "@/interface";
 
 const service = axios.create({
   baseURL,

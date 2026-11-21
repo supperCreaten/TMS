@@ -1,31 +1,12 @@
-import { forwardRef, useImperativeHandle, useState, type ReactNode } from "react"
-import {
-  Button,
-  Form,
-  Space,
-  type FormInstanceFunctions,
-  type FormProps,
-  type SubmitContext,
-} from "tdesign-react"
+import { forwardRef, useImperativeHandle, useState } from "react"
+import { Button, Form, Space, type SubmitContext } from "tdesign-react"
 import { ChevronDownIcon, ChevronUpIcon, RefreshIcon, SearchIcon } from "tdesign-icons-react"
 import BasicForm from "@/components/BasicForm"
-import type { FormConfig } from "@/interface"
+import type { FormConfig, SearchBoxProps, SearchBoxRef } from "@/interface"
 import { cn } from "@/utils/methods"
 import { DEFAULT_COLLAPSED_VISIBLE, DEFAULT_FIELDS_PER_ROW } from "./constants"
 
-export type SearchBoxRef = FormInstanceFunctions
-
-export type SearchBoxProps = {
-  formConfig: FormConfig[]
-  onSearch: () => void | Promise<void>
-  /** 重置后、查询前钩子（如清除树选中） */
-  onReset?: () => void
-  formProps?: Omit<FormProps, "children" | "form" | "onSubmit" | "onReset">
-  extra?: ReactNode
-  collapsedVisibleCount?: number
-  fieldsPerRow?: number
-  searchButtonText?: string
-}
+export type { SearchBoxProps, SearchBoxRef } from "@/interface"
 
 async function withLoading(setLoading: (v: boolean) => void, task: () => void | Promise<void>) {
   setLoading(true)

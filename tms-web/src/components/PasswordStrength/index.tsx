@@ -1,4 +1,5 @@
-import { getPasswordStrength, type PasswordStrengthLevel } from "@/pages/login/passwordStrength"
+import type { PasswordStrengthLevel, PasswordStrengthProps } from "@/interface"
+import { getPasswordStrength } from "@/pages/login/passwordStrength"
 
 
 
@@ -30,15 +31,7 @@ const LEVEL_COLOR: Record<Exclude<PasswordStrengthLevel, "empty">, string> = {
 
 
 
-export type PasswordStrengthProps = {
-
-  password?: string
-
-  className?: string
-
-}
-
-
+export type { PasswordStrengthProps } from "@/interface"
 
 /** 密码强度三段指示条（输入后显示） */
 

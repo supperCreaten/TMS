@@ -6,42 +6,23 @@ import BasicTable, { type BasicTableRef } from "@/components/BasicTable"
 import MoreActions from "@/components/MoreActions"
 import SearchBox, { type SearchBoxRef } from "@/components/SearchBox"
 import TableSection from "@/components/TableSection"
-import type { FormConfig } from "@/interface"
+import type { FormConfig, RoleAuthDialogState, RoleDialogState, RoleRow } from "@/interface"
 import { getParams, showMessage } from "@/utils/methods"
 import InputText from "@/components/InputText"
 import AddRole from "./components/AddRole"
 import AuthUser from "./components/AuthUser"
 
-type RoleRow = {
-  roleId: string | number
-  roleCode: string
-  roleKey: string
-  roleName: string
-  status: string | number
+type RoleTableRow = RoleRow & {
+  roleCode?: string
   userCount?: number
   createBy?: string
-  createTime?: string
-  updateBy?: string
-  updateTime?: string
-}
-
-type RoleDialogState = {
-  visible: boolean
-  title: string
-  roleId?: string
-}
-
-type AuthDialogState = {
-  visible: boolean
-  roleId?: string
-  roleName?: string
 }
 
 export default function RolePage() {
   const searchRef = useRef<SearchBoxRef>(null)
-  const tableRef = useRef<BasicTableRef<RoleRow>>(null)
+  const tableRef = useRef<BasicTableRef<RoleTableRow>>(null)
   const [roleDialog, setRoleDialog] = useState<RoleDialogState>({ visible: false, title: "" })
-  const [authDialog, setAuthDialog] = useState<AuthDialogState>({ visible: false })
+  const [authDialog, setAuthDialog] = useState<RoleAuthDialogState>({ visible: false })
 
   const formConfig = useMemo<FormConfig[]>(
     () => [
@@ -73,7 +54,7 @@ export default function RolePage() {
     [],
   )
 
-  const columns = useMemo<TableProps<RoleRow>["columns"]>(
+  const columns = useMemo<TableProps<RoleTableRow>["columns"]>(
     () => [
       {
         title: "角色编码",
@@ -171,7 +152,7 @@ export default function RolePage() {
     void tableRef.current?.refresh({ resetCurrent: true })
   }
 
-  const handleDelete = (row: RoleRow) => {
+  const handleDelete = (row: RoleTableRow) => {
     const dialogInstance = DialogPlugin.confirm({
       header: "提示",
       body: `确定删除角色「${row.roleName}」吗？`,
@@ -204,7 +185,7 @@ export default function RolePage() {
         </Button>
       </TableSection.ToolbarRight>
       <TableSection.Content>
-        <BasicTable<RoleRow>
+        <BasicTable<RoleTableRow>
           ref={tableRef}
           rowKey="roleId"
           columns={columns}

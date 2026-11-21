@@ -5,7 +5,7 @@ import ContentSection from "@/components/ContentSection"
 import EditableTextCell from "@/components/EditableTextCell"
 import InputText from "@/components/InputText"
 import LayoutTitle from "@/components/LayoutTitle"
-import { FormConfig } from "@/interface"
+import type { CargoRow, CargoTotals, FormConfig, OrderCargoItem } from "@/interface"
 import { formartPositiveInteger, trimTrailingZeros } from "@/utils/format/decimal"
 import { validateTableDataSource, type TableFieldRule } from "@/utils/table"
 import NP from "number-precision"
@@ -33,19 +33,6 @@ const CARGO_TABLE_SCROLL = {
   bufferSize: 10,
 }
 
-/** 货物信息行 */
-interface CargoRow {
-  id: string | number
-  cargoName?: string
-  cargoType?: string
-  quantity?: string
-  unit?: string
-  weight?: string
-  vehicleType?: string
-  vehicleLength?: string
-  vehicleCount?: string
-}
-
 function createEmptyCargoRow(): CargoRow {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -60,10 +47,18 @@ function createEmptyCargoRow(): CargoRow {
   }
 }
 
-type CargoTotals = {
-  quantity: number
-  weight: number
-  vehicleCount: number
+function toCargoRow(item: OrderCargoItem): CargoRow {
+  return {
+    id: item.id ?? item.cargoId ?? `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    cargoName: item.cargoName != null ? String(item.cargoName) : "",
+    cargoType: item.cargoType != null ? String(item.cargoType) : "",
+    quantity: item.quantity != null ? String(item.quantity) : "",
+    unit: item.unit != null ? String(item.unit) : "",
+    weight: item.weight != null ? String(item.weight) : "",
+    vehicleType: item.vehicleType != null ? String(item.vehicleType) : "",
+    vehicleLength: item.vehicleLength != null ? String(item.vehicleLength) : "",
+    vehicleCount: item.vehicleCount != null ? String(item.vehicleCount) : "",
+  }
 }
 
 const EMPTY_CARGO_TOTALS: CargoTotals = { quantity: 0, weight: 0, vehicleCount: 0 }
@@ -125,7 +120,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
   const [receiverForm] = Form.useForm()
   const [searchParams] = useSearchParams()
   const [cargoTotals, setCargoTotals] = useState<CargoTotals>(EMPTY_CARGO_TOTALS)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading] = useState<boolean>(false)
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [customerList, setCustomerList] = useState<Array<{ customerName: string; customerId: string }> | Array<any>>([])
   const dict = useDict([
@@ -474,7 +469,7 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
       baseInfoForm.setFieldsValue(formValues)
       senderForm.setFieldsValue(formValues)
       receiverForm.setFieldsValue(formValues)
-      tableRef.current?.setTableData(cargoList)
+      tableRef.current?.setTableData(cargoList.map(toCargoRow))
     },
     [baseInfoForm, senderForm, receiverForm],
   )

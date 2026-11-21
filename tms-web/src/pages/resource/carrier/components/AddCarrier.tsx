@@ -1,51 +1,22 @@
 import { useEffect, useMemo, useState } from "react"
 import { DatePicker, Form, Loading, Select, Switch } from "tdesign-react"
 import api from "@/api"
-import type { CarrierDetail } from "@/api/modules/carrier"
 import AreaCascader from "@/components/AreaCascader"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
 import InputText from "@/components/InputText"
 import LayoutTitle from "@/components/LayoutTitle"
-import type { FormConfig } from "@/interface"
+import type { AddCarrierProps, CarrierDetail, CarrierFormValues, FormConfig } from "@/interface"
 import { showMessage } from "@/utils/methods"
 import FileUrlUpload from "../../components/FileUrlUpload"
 import { CARRIER_LEVEL_OPTIONS, CARRIER_TYPE_OPTIONS, COOP_STATUS_OPTIONS, SETTLE_TYPE_OPTIONS } from "../../constants"
 
-type CarrierFormValues = {
-  carrierName?: string
-  shortName?: string
-  legalPerson?: string
-  carrierType?: string
-  carrierLevel?: string
-  taxRegNo?: string
+type CarrierFormModel = Omit<CarrierFormValues, "region" | "contractSigned"> & {
   region?: string[]
-  companyAddress?: string
-  companyEmail?: string
-  status?: string
-  businessLicenseNo?: string
-  businessLicenseUrl?: string
-  roadPermitNo?: string
-  roadPermitUrl?: string
-  contactName?: string
-  contactPhone?: string
-  contactDept?: string
-  contactTitle?: string
-  contactEmail?: string
-  contactWechat?: string
-  settleType?: string
-  invoiceTitle?: string
-  taxNo?: string
-  bankName?: string
-  bankAccountName?: string
-  bankAccountNo?: string
   contractSigned?: boolean | string
-  contractFileUrl?: string
-  contractExpireDate?: string
-  remark?: string
 }
 
-const initialValues: CarrierFormValues = {
+const initialValues: CarrierFormModel = {
   status: "0",
   settleType: "monthly",
   contractSigned: true,
@@ -62,7 +33,7 @@ function joinCsv(value?: string[]) {
   return value.join(",")
 }
 
-function mapDetailToForm(data?: CarrierDetail): CarrierFormValues {
+function mapDetailToForm(data?: CarrierDetail): CarrierFormModel {
   return {
     ...initialValues,
     ...data,
@@ -72,12 +43,7 @@ function mapDetailToForm(data?: CarrierDetail): CarrierFormValues {
   }
 }
 
-export type AddCarrierProps = {
-  visible: boolean
-  title: string
-  carrierId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddCarrierProps } from "@/interface"
 
 export default function AddCarrier(props: AddCarrierProps) {
   const { visible, title, carrierId, onClose } = props
@@ -302,7 +268,7 @@ export default function AddCarrier(props: AddCarrierProps) {
         contractForm.setFieldsValue({ ...initialValues })
         if (!isEdit || !carrierId) return
         const data = await api.getCarrierDetail(carrierId)
-        const formValues = mapDetailToForm(data)
+        const formValues = mapDetailToForm(data || {})
         baseInfoForm.setFieldsValue(formValues)
         contactForm.setFieldsValue(formValues)
         financeForm.setFieldsValue(formValues)
@@ -325,8 +291,8 @@ export default function AddCarrier(props: AddCarrierProps) {
     try {
       const values = [baseInfoForm, contactForm, financeForm, contractForm]
         .map((form) => form.getFieldsValue(true))
-        .reduce((acc, curr) => ({ ...acc, ...curr }), {}) as CarrierFormValues
-      const signed = values.contractSigned === true || values.contractSigned === "1"
+        .reduce((acc, curr) => ({ ...acc, ...curr }), {}) as CarrierFormModel
+      const signed = values.contractSigned === true || String(values.contractSigned) === "1"
       const payload: Record<string, unknown> = {
         ...(isEdit && carrierId ? { carrierId } : {}),
         ...values,

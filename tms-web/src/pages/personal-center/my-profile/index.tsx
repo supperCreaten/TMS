@@ -32,23 +32,11 @@ import type { TdFormProps } from "tdesign-react/es/form/type"
 import { useEffect, useMemo, useReducer } from "react"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
+import type { PasswordFormValues, ProfileFormValues, ProfileUiState } from "@/interface"
 import "./index.css"
 
 const { FormItem } = Form
 const { TabPanel } = Tabs
-
-type ProfileFormValues = {
-  nickName: string
-  phonenumber: string
-  email: string
-  sex: string
-}
-
-type PasswordFormValues = {
-  oldPassword: string
-  newPassword: string
-  confirmPassword: string
-}
 
 function asText(value: unknown) {
   return typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim()
@@ -72,13 +60,6 @@ function splitRoles(roleName: unknown) {
 
 const cardClassName =
   "overflow-hidden rounded-2xl border border-[rgb(15_23_42/5%)] bg-white shadow-[0_1px_2px_rgb(15_23_42/3%),0_12px_32px_rgb(15_23_42/5%)]"
-
-type ProfileUiState = {
-  activeTab: string
-  savingProfile: boolean
-  savingPassword: boolean
-  uploadingAvatar: boolean
-}
 
 const initialProfileUiState: ProfileUiState = {
   activeTab: "basic",
@@ -124,7 +105,7 @@ export default function MyProfilePage() {
   }, [profileForm, userInfo])
 
   const refreshUserInfo = async () => {
-    const next = await api.getUserInfo()
+    const next = (await api.getUserInfo()) || {}
     dispatch(setUserInfo(next))
   }
 
@@ -185,8 +166,8 @@ export default function MyProfilePage() {
     setUi({ savingPassword: true })
     try {
       await api.updateProfilePassword({
-        oldPassword: values.oldPassword,
-        newPassword: values.newPassword,
+        oldPassword: values.oldPassword ?? "",
+        newPassword: values.newPassword ?? "",
       })
       passwordForm.reset()
       showMessage("密码修改成功", "success")

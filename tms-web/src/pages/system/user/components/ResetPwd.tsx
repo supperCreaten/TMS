@@ -6,6 +6,9 @@ import PasswordStrength from "@/components/PasswordStrength"
 import { validatePasswordStrength } from "@/components/PasswordStrength/validate"
 import { showMessage } from "@/utils/methods"
 import InputText from "@/components/InputText"
+import type { ResetPwdFormValues, ResetPwdProps } from "@/interface"
+
+export type { ResetPwdProps } from "@/interface"
 
 const { FormItem } = Form
 
@@ -18,19 +21,6 @@ const PASSWORD_RULES: FormRule[] = [
     message: "密码强度过弱，请包含大小写字母、数字或特殊字符",
   },
 ]
-
-type ResetPwdFormValues = {
-  password?: string
-  confirmPassword?: string
-}
-
-export type ResetPwdProps = {
-  visible: boolean
-  userId?: string
-  userName?: string
-  account?: string
-  onClose: (submitted?: boolean) => void
-}
 
 export default function ResetPwd(props: ResetPwdProps) {
   const { visible, userId, userName, account, onClose } = props

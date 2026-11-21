@@ -3,38 +3,24 @@ import { Card, Col, Form, InputNumber, Loading, Row, Switch, Tree } from "tdesig
 import api from "@/api"
 import BasicDialog from "@/components/BasicDialog"
 import BasicForm from "@/components/BasicForm"
-import type { FormConfig } from "@/interface"
+import type { AddRoleProps, AddRoleState as AddRoleStateBase, FormConfig, MenuTreeNode } from "@/interface"
 import { showMessage } from "@/utils/methods"
 import InputText from "@/components/InputText"
 
-type MenuTreeNode = {
-  menuId: string | number
-  menuName: string
-  children?: MenuTreeNode[]
-}
-
-export type AddRoleProps = {
-  visible: boolean
-  title: string
-  roleId?: string
-  onClose: (submitted?: boolean) => void
-}
+export type { AddRoleProps } from "@/interface"
 
 function toMenuIds(keys: Array<string | number>): string[] {
   return keys.map((k) => String(k)).filter(Boolean)
 }
 
-type AddRoleState = {
-  treeData: MenuTreeNode[]
-  selectedMenuKeys: Array<string | number>
+type AddRoleState = AddRoleStateBase & {
   treeLoading: boolean
-  loading: boolean
   submitting: boolean
 }
 
 const initialAddRoleState: AddRoleState = {
-  treeData: [],
-  selectedMenuKeys: [],
+  menuTree: [],
+  checkedKeys: [],
   treeLoading: false,
   loading: false,
   submitting: false,
@@ -48,7 +34,7 @@ export default function AddRole(props: AddRoleProps) {
   const { visible, title, roleId, onClose } = props
   const [form] = Form.useForm()
   const [state, dispatch] = useReducer(addRoleReducer, initialAddRoleState)
-  const { treeData, selectedMenuKeys, treeLoading, loading, submitting } = state
+  const { menuTree, checkedKeys, treeLoading, loading, submitting } = state
   const isEdit = title === "修改角色"
 
   const formConfig = useMemo(
@@ -101,7 +87,7 @@ export default function AddRole(props: AddRoleProps) {
     dispatch({ treeLoading: true })
     try {
       const res = await api.getMenus()
-      dispatch({ treeData: Array.isArray(res) ? (res as MenuTreeNode[]) : [] })
+      dispatch({ menuTree: Array.isArray(res) ? (res as MenuTreeNode[]) : [] })
     } finally {
       dispatch({ treeLoading: false })
     }
@@ -110,10 +96,10 @@ export default function AddRole(props: AddRoleProps) {
   const loadMenuConfig = useCallback(async () => {
     if (!roleId) return
     try {
-      const res = await api.getMenuConfig({ roleId })
-      dispatch({ selectedMenuKeys: (res?.checkedKeys ?? []).map((id) => String(id)) })
+      const res = (await api.getMenuConfig({ roleId })) || {}
+      dispatch({ checkedKeys: (res.checkedKeys ?? []).map((id) => String(id)) })
     } catch {
-      dispatch({ selectedMenuKeys: [] })
+      dispatch({ checkedKeys: [] })
     }
   }, [roleId])
 
@@ -126,7 +112,7 @@ export default function AddRole(props: AddRoleProps) {
         form.reset()
         form.setFieldsValue({ status: true, roleSort: 0 })
         if (!isEdit || !roleId) return
-        const data = await api.getRoleDetail({ roleId })
+        const data = (await api.getRoleDetail({ roleId })) || {}
         form.setFieldsValue({
           roleCode: data.roleCode,
           roleKey: data.roleKey,
@@ -146,7 +132,7 @@ export default function AddRole(props: AddRoleProps) {
   const handleSubmit = async () => {
     const validate = await form.validate()
     if (validate !== true) return
-    if (!selectedMenuKeys.length) {
+    if (!checkedKeys.length) {
       showMessage("请选择菜单权限", "warning")
       return
     }
@@ -166,7 +152,7 @@ export default function AddRole(props: AddRoleProps) {
         status: values.status ? "0" : "1",
         roleSort: values.roleSort ?? 0,
         remark: values.remark ?? "",
-        menuIds: toMenuIds(selectedMenuKeys),
+        menuIds: toMenuIds(checkedKeys),
       }
       if (isEdit) {
         // 编辑不改角色编码，权限字符随表单提交
@@ -203,13 +189,13 @@ export default function AddRole(props: AddRoleProps) {
               <Loading loading={treeLoading}>
                 <div className="h-80 overflow-auto rounded border border-(--td-component-border) bg-(--td-bg-color-container) p-2">
                   <Tree
-                    data={treeData}
+                    data={menuTree}
                     checkable
                     expandAll
-                    value={selectedMenuKeys}
+                    value={checkedKeys}
                     keys={{ label: "menuName", value: "menuId", children: "children" }}
                     valueMode="all"
-                    onChange={(value) => dispatch({ selectedMenuKeys: value as Array<string | number> })}
+                    onChange={(value) => dispatch({ checkedKeys: value as Array<string | number> })}
                   />
                 </div>
               </Loading>

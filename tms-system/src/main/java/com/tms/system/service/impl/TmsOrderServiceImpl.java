@@ -4,10 +4,11 @@ import com.tms.common.utils.StringUtils;
 import com.tms.system.domain.dto.TmsOrderCargoSaveReq;
 import com.tms.system.domain.dto.TmsOrderQuery;
 import com.tms.system.domain.dto.TmsOrderSaveReq;
+import com.tms.system.domain.vo.TmsOrderCargoVo;
+import com.tms.system.domain.vo.TmsOrderVo;
 import com.tms.system.mapper.TmsOrderCargoMapper;
 import com.tms.system.mapper.TmsOrderMapper;
 import com.tms.system.service.ITmsOrderService;
-import com.tms.system.domain.vo.TmsOrderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,9 @@ import java.util.List;
 @Service
 public class TmsOrderServiceImpl implements ITmsOrderService {
 
-    /** 订单编号前缀 */
+    /**
+     * 订单编号前缀
+     */
     private static final String ORDERKEY = "YWDD";
 
     @Autowired
@@ -62,18 +65,23 @@ public class TmsOrderServiceImpl implements ITmsOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void insertOrder(TmsOrderSaveReq orderSaveReq) {
-        List<TmsOrderCargoSaveReq> cargoList = orderSaveReq.getCargoList();
-        if (cargoList == null || cargoList.isEmpty()) {
-            throw new SecurityException("请至少添加一条货物信息");
+
+        try {
+            List<TmsOrderCargoSaveReq> cargoList = orderSaveReq.getCargoList();
+            if (cargoList == null || cargoList.isEmpty()) {
+                throw new SecurityException("请至少添加一条货物信息");
+            }
+            String orderNo = generateOrderNo();
+            orderSaveReq.setOrderNo(orderNo);
+            tmsOrderMapper.insertOrder(orderSaveReq);
+            Long orderId = orderSaveReq.getOrderId();
+            for (TmsOrderCargoSaveReq cargo : cargoList) {
+                cargo.setOrderId(orderId);
+            }
+            tmsOrderCargoMapper.batchInsertCargo(cargoList);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        String orderNo = generateOrderNo();
-        orderSaveReq.setOrderNo(orderNo);
-        tmsOrderMapper.insertOrder(orderSaveReq);
-        Long orderId = orderSaveReq.getOrderId();
-        for (TmsOrderCargoSaveReq cargo : cargoList) {
-            cargo.setOrderId(orderId);
-        }
-        tmsOrderCargoMapper.batchInsertCargo(cargoList);
     }
 
     /**
@@ -82,15 +90,40 @@ public class TmsOrderServiceImpl implements ITmsOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateOrder(TmsOrderSaveReq orderSaveReq) {
-        Long orderId = orderSaveReq.getOrderId();
-        if (orderId == null) {
-            throw new RuntimeException("主键ID不能为空");
+        try {
+
+            Long orderId = orderSaveReq.getOrderId();
+            if (orderId == null) {
+                throw new RuntimeException("主键ID不能为空");
+            }
+            List<TmsOrderCargoSaveReq> cargoList = orderSaveReq.getCargoList();
+            if (cargoList == null || cargoList.isEmpty()) {
+                throw new SecurityException("请至少添加一条货物信息");
+            }
+            tmsOrderMapper.updateOrder(orderSaveReq);
+            tmsOrderCargoMapper.batchUpdateCargo(cargoList);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        List<TmsOrderCargoSaveReq> cargoList = orderSaveReq.getCargoList();
-        if (cargoList == null || cargoList.isEmpty()) {
-            throw new SecurityException("请至少添加一条货物信息");
+    }
+
+    /**
+     * 根据主键id获取订单详情
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public TmsOrderVo selectOrderById(Long orderId) {
+        try {
+            if (orderId == null) {
+                throw new RuntimeException("主键ID不能为空");
+            }
+            TmsOrderVo orderVos = tmsOrderMapper.selectOrderById(orderId);
+            List<TmsOrderCargoVo> cargoList = tmsOrderCargoMapper.selectCargoListByOrderId(orderId);
+            orderVos.setCargoList(cargoList);
+            return orderVos;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        tmsOrderMapper.updateOrder(orderSaveReq);
-        tmsOrderCargoMapper.batchUpdateCargo(cargoList);
+
     }
 }

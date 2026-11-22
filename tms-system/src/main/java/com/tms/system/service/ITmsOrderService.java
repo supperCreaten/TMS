@@ -33,4 +33,11 @@ public interface ITmsOrderService {
      * @param tmsOrderSaveReq 订单及货物（须含 orderId）
      */
     void updateOrder(TmsOrderSaveReq tmsOrderSaveReq);
+
+    /**
+     * 修改订单及货物明细
+     *
+     * @param orderId 订单主键id
+     */
+    TmsOrderVo selectOrderById(Long orderId);
 }

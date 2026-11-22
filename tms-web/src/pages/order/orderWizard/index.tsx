@@ -9,7 +9,7 @@ import type { CargoRow, CargoTotals, FormConfig, OrderCargoItem } from "@/interf
 import { formartPositiveInteger, trimTrailingZeros } from "@/utils/format/decimal"
 import { validateTableDataSource, type TableFieldRule } from "@/utils/table"
 import NP from "number-precision"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
 import type { ColProps, TableProps } from "tdesign-react"
 import { Button, DatePicker, Form, MessagePlugin, Select } from "tdesign-react"
 import { AddIcon } from "tdesign-icons-react"
@@ -87,6 +87,30 @@ function formatCargoTotal(value: number, decimalPlaces?: number) {
   return trimTrailingZeros(NP.round(value, decimalPlaces).toFixed(decimalPlaces)) || "0"
 }
 
+type CustomerOption = { label: string; value: string | number }
+
+type OrderWizardState = {
+  cargoTotals: CargoTotals
+  loading: boolean
+  submitting: boolean
+  sendAreaList: string[]
+  receiverAreaList: string[]
+  customerList: CustomerOption[]
+}
+
+const initialOrderWizardState: OrderWizardState = {
+  cargoTotals: EMPTY_CARGO_TOTALS,
+  loading: false,
+  submitting: false,
+  sendAreaList: [],
+  receiverAreaList: [],
+  customerList: [],
+}
+
+function orderWizardReducer(state: OrderWizardState, patch: Partial<OrderWizardState>): OrderWizardState {
+  return { ...state, ...patch }
+}
+
 /** 货物表数据校验规则（校验 getDataSource，不改行内样式） */
 const CARGO_TABLE_RULES: TableFieldRule<CargoRow>[] = [
   { field: "cargoName", required: "货物名称不能为空" },
@@ -119,10 +143,8 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
   const [senderForm] = Form.useForm()
   const [receiverForm] = Form.useForm()
   const [searchParams] = useSearchParams()
-  const [cargoTotals, setCargoTotals] = useState<CargoTotals>(EMPTY_CARGO_TOTALS)
-  const [loading] = useState<boolean>(false)
-  const [submitting, setSubmitting] = useState<boolean>(false)
-  const [customerList, setCustomerList] = useState<Array<{ customerName: string; customerId: string }> | Array<any>>([])
+  const [state, dispatch] = useReducer(orderWizardReducer, initialOrderWizardState)
+  const { cargoTotals, loading, submitting, sendAreaList, receiverAreaList, customerList } = state
   const dict = useDict([
     ORDER_DICT.orderSource,
     ORDER_DICT.transportType,
@@ -139,13 +161,15 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
   const vehicleLengthOptions = dict[ORDER_DICT.vehicleLength] ?? []
   const refreshCargoTotals = useCallback(() => {
     const rows = tableRef.current?.getDataSource() ?? []
-    setCargoTotals(calcCargoTotals(rows))
+    dispatch({ cargoTotals: calcCargoTotals(rows) })
   }, [])
   const getCustomerList = useCallback(async () => {
-    setCustomerList([])
+    dispatch({ customerList: [] })
     const data = await api.customerAllQuery()
     const list = data || []
-    setCustomerList(list?.map((v) => ({ label: v.customerName, value: v.customerId })))
+    dispatch({
+      customerList: list.map((v) => ({ label: v.customerName, value: v.customerId })),
+    })
   }, [])
   const commitCargoPatch = useCallback(
     (rowId: string | number, patch: Partial<CargoRow>) => {
@@ -249,7 +273,17 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         name: "origin",
         label: "始发地",
         rules: [{ required: true, message: "请选择始发地" }],
-        component: <AreaCascader placeholder="请选择始发地" />,
+        component: (
+          <AreaCascader
+            placeholder="请选择始发地"
+            onChange={(_value, context) => {
+              const { node } = context
+              const data = node?.getPath()
+              const list = data?.length ? data.map((item) => String(item?.label ?? "")) : []
+              dispatch({ sendAreaList: list })
+            }}
+          />
+        ),
         colProps: PARTY_COL,
       },
       {
@@ -286,7 +320,17 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         name: "destination",
         label: "目的地",
         rules: [{ required: true, message: "请选择目的地" }],
-        component: <AreaCascader placeholder="请选择目的地" />,
+        component: (
+          <AreaCascader
+            placeholder="请选择目的地"
+            onChange={(_value, context) => {
+              const { node } = context
+              const data = node?.getPath()
+              const list = data?.length ? data.map((item) => String(item?.label ?? "")) : []
+              dispatch({ receiverAreaList: list })
+            }}
+          />
+        ),
         colProps: PARTY_COL,
       },
       {
@@ -461,19 +505,37 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
       vehicleLengthOptions,
     ],
   )
+  /**
+   * 订单信息
+   * @param orderId 订单ID
+   * @returns 订单信息
+   */
   const getOrderDetail = useCallback(
     async (orderId: string) => {
       if (!orderId) return
-      const data = await api.getOrderDetail(orderId)
+      dispatch({ loading: true })
+      const data = await api.getOrderDetail(orderId).finally(() => {
+        dispatch({ loading: false })
+      })
       const { cargoList = [], ...formValues } = data || {}
       baseInfoForm.setFieldsValue(formValues)
       senderForm.setFieldsValue(formValues)
       receiverForm.setFieldsValue(formValues)
       tableRef.current?.setTableData(cargoList.map(toCargoRow))
+      refreshCargoTotals()
+      if (Array.isArray(formValues.originText)) {
+        dispatch({ sendAreaList: formValues.originText.map(String) })
+      }
+      if (Array.isArray(formValues.destinationText)) {
+        dispatch({ receiverAreaList: formValues.destinationText.map(String) })
+      }
     },
-    [baseInfoForm, senderForm, receiverForm],
+    [baseInfoForm, senderForm, receiverForm, refreshCargoTotals],
   )
-
+  /**
+   * 提交表单
+   * @param values  表单数据
+   */
   const handleSubmit = useCallback(async () => {
     await Promise.all([baseInfoForm.validate(), senderForm.validate(), receiverForm.validate()])
     const result = validateTableDataSource(() => tableRef.current?.getDataSource() ?? [], {
@@ -482,19 +544,18 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
       minRowsMessage: "请至少添加一条货物信息",
     })
     if (!result?.valid) return
-    setSubmitting(true)
+    dispatch({ submitting: true })
     const baseInfo = baseInfoForm.getFieldsValue(true)
     const sender = senderForm.getFieldsValue(true)
     const receiver = receiverForm.getFieldsValue(true)
     const cargoList = tableRef.current?.getDataSource()
-    const orderId = searchParams.get("id")
-    // origin/destination 保持 AreaCascader 编码数组，后端拆成省市区三字段入库
-    const data = { ...baseInfo, ...sender, ...receiver, cargoList }
+    const orderId = searchParams.get("orderId")
+    const data = { ...baseInfo, ...sender, ...receiver, sendAreaList, receiverAreaList, cargoList }
     const params = orderId ? { orderId, ...data } : data
     const request = orderId ? api.updateOrder : api.insertOrder
-    await request(params).finally(() => setSubmitting(false))
+    await request(params).finally(() => dispatch({ submitting: false }))
     MessagePlugin.success(orderId ? "修改订单成功" : "新增订单成功")
-  }, [])
+  }, [baseInfoForm, senderForm, receiverForm, searchParams, sendAreaList, receiverAreaList])
   return (
     <ContentSection loading={loading}>
       <ContentSection.Content>

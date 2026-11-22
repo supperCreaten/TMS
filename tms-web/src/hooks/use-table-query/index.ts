@@ -90,8 +90,6 @@ export default function useTableQuery<T extends TableRowData>(
         const data = await fetchRequest({
           ...(enablePagination
             ? {
-                current: page,
-                currentPage: page,
                 pageNum: page,
                 pageSize: size,
               }

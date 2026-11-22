@@ -25,8 +25,10 @@ export interface OrderRow {
   orderId: number
   orderNo?: string
   waybillNo?: string
-  origin?: string
-  destination?: string
+  origin?: string[]
+  originText?: string[]
+  destination?: string[]
+  destinationText?: string[]
   customerId?: number | string
   customerName?: string
   orderStatus?: string
@@ -39,11 +41,13 @@ export interface OrderRow {
   receiverAddress?: string
   expectArriveTime?: string
   transportType?: string
+  transportTypeText?: string
   cargoType?: string
   totalQuantity?: number
   totalWeight?: number
   totalFee?: number
   orderSource?: string
+  orderSourceText?: string
   remark?: string
   createBy?: string
   createTime?: string

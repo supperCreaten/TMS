@@ -10,17 +10,12 @@ import SearchBox, { SearchBoxRef } from "@/components/SearchBox"
 import MoreActions from "@/components/MoreActions"
 import InputText from "@/components/InputText"
 import { useNavigate } from "react-router-dom"
-import useDict, { getDictLabel } from "@/hooks/use-dict"
-import { ORDER_DICT } from "./constants"
+import { getOrderStatusTagTheme } from "./constants"
 export default function order() {
   const searchRef = useRef<SearchBoxRef>(null)
   const tableRef = useRef<BasicTableRef<OrderRow>>(null)
   const [selectedKeys, setSelectedKeys] = useState<Array<string | number>>([])
   const navigate = useNavigate()
-  const dict = useDict([ORDER_DICT.cargoType, ORDER_DICT.transportType, ORDER_DICT.orderSource])
-  const cargoTypeOptions = dict[ORDER_DICT.cargoType] ?? []
-  const transportTypeOptions = dict[ORDER_DICT.transportType] ?? []
-  const orderSourceOptions = dict[ORDER_DICT.orderSource] ?? []
   const formConfig = useMemo<FormConfig[]>(
     () => [
       {
@@ -74,19 +69,25 @@ export default function order() {
       },
       {
         title: "始发地",
-        colKey: "origin",
+        colKey: "originText",
         width: 160,
         align: "center",
         ellipsis: true,
-        cell: ({ row }) => (Array.isArray(row.origin) ? row.origin.join("/") : row.origin) || "-",
+        cell: ({ row }) => {
+          if (!row?.originText?.length) return "-"
+          return row?.originText.join("/")
+        },
       },
       {
         title: "目的地",
-        colKey: "destination",
+        colKey: "destinationText",
         width: 160,
         align: "center",
         ellipsis: true,
-        cell: ({ row }) => (Array.isArray(row.destination) ? row.destination.join("/") : row.destination) || "-",
+        cell: ({ row }) => {
+          if (!row?.destinationText?.length) return "-"
+          return row?.destinationText.join("/")
+        },
       },
       { title: "客户名称", colKey: "customerName", width: 140, align: "center", ellipsis: true },
       {
@@ -94,9 +95,11 @@ export default function order() {
         colKey: "orderStatus",
         width: 110,
         align: "center",
-        cell: ({ row }) => {
-          return <Tag variant="light">{row?.orderStatusText}</Tag>
-        },
+        cell: ({ row }) => (
+          <Tag theme={getOrderStatusTagTheme(row?.orderStatus)} variant="light">
+            {row?.orderStatusText || "-"}
+          </Tag>
+        ),
       },
       {
         title: "发货信息",
@@ -104,10 +107,10 @@ export default function order() {
         width: 200,
         ellipsis: true,
         cell: ({ row }) => (
-          <div style={{ lineHeight: 1.6 }}>
+          <div>
             <div>联系人：{row.senderName || "-"}</div>
-            <div>联系电话：{row.senderPhone || "-"}</div>
-            <div>发货地址：{row.senderAddress || "-"}</div>
+            <div>电话：{row.senderPhone || "-"}</div>
+            <div>地址：{row.senderAddress || "-"}</div>
           </div>
         ),
       },
@@ -117,10 +120,10 @@ export default function order() {
         width: 200,
         ellipsis: true,
         cell: ({ row }) => (
-          <div style={{ lineHeight: 1.6 }}>
+          <div>
             <div>联系人：{row.receiverName || "-"}</div>
-            <div>联系电话：{row.receiverPhone || "-"}</div>
-            <div>收货地址：{row.receiverAddress || "-"}</div>
+            <div>电话：{row.receiverPhone || "-"}</div>
+            <div>地址：{row.receiverAddress || "-"}</div>
           </div>
         ),
       },
@@ -133,30 +136,22 @@ export default function order() {
       },
       {
         title: "订单类型",
-        colKey: "transportType",
+        colKey: "transportTypeText",
         width: 100,
         align: "center",
         ellipsis: true,
-        cell: ({ row }) => getDictLabel(transportTypeOptions, row.transportType),
-      },
-      {
-        title: "货物类型",
-        colKey: "cargoType",
-        width: 100,
-        align: "center",
-        ellipsis: true,
-        cell: ({ row }) => getDictLabel(cargoTypeOptions, row.cargoType),
+        cell: ({ row }) => row.transportTypeText || row.transportType || "-",
       },
       { title: "货物数量", colKey: "totalQuantity", width: 100, align: "center" },
-      { title: "总重量", colKey: "totalWeight", width: 100, align: "center" },
-      { title: "运费合计", colKey: "totalFee", width: 110, align: "center" },
+      { title: "总重量(kg)", colKey: "totalWeight", width: 100, align: "center" },
+      { title: "总用车", colKey: "totalVehicleCount", width: 100, align: "center" },
       {
         title: "订单来源",
-        colKey: "orderSource",
+        colKey: "orderSourceText",
         width: 110,
         align: "center",
         ellipsis: true,
-        cell: ({ row }) => getDictLabel(orderSourceOptions, row.orderSource),
+        cell: ({ row }) => row.orderSourceText || row.orderSource || "-",
       },
       { title: "订单备注", colKey: "remark", width: 160, align: "center", ellipsis: true },
       { title: "下单时间", colKey: "createTime", width: 170, align: "center", ellipsis: true },
@@ -180,13 +175,13 @@ export default function order() {
                 },
               },
               { key: "dispatch", label: "调度", onClick: () => {} },
-              { key: "detail", label: "详情", theme: "danger", onClick: () => {} },
+              { key: "delete", label: "删除", theme: "danger", onClick: () => {} },
             ]}
           />
         ),
       },
     ],
-    [cargoTypeOptions, transportTypeOptions, orderSourceOptions],
+    [navigate],
   )
   const handleSearch = () => {
     tableRef.current?.refresh({ resetCurrent: true })

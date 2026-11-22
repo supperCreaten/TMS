@@ -52,6 +52,10 @@ export interface MenuNode {
 
 export interface LayoutMenuItemProps<T extends MenuNode = MenuItemType> {
   menus?: T[] | null
+  /** 当前激活菜单 value；用于已激活项再次点击时仍能触发导航 */
+  activeValue?: string
+  /** 菜单项点击（含已激活再点） */
+  onItemClick?: (key: string) => void
 }
 
 export interface LayoutMenuProps {

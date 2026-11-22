@@ -8,6 +8,25 @@ export const ORDER_DICT = {
   vehicleLength: "tms_vehicle_length",
 } as const
 
+/** 订单状态 Tag 主题（与后端 OrderStatus 枚举 code 一致） */
+export const ORDER_STATUS_TAG_THEME = {
+  pending_accept: "warning", // 待接单
+  pending_dispatch: "primary", // 待调度
+  in_transit: "primary", // 运输中
+  signed: "success", // 已签收
+  completed: "success", // 已完成
+  rejected: "danger", // 已拒绝
+  canceled: "default", // 已取消
+  exception: "danger", // 异常
+} as const
+
+export type OrderStatusCode = keyof typeof ORDER_STATUS_TAG_THEME
+
+export function getOrderStatusTagTheme(status?: string) {
+  if (!status) return "default" as const
+  return ORDER_STATUS_TAG_THEME[status as OrderStatusCode] ?? ("default" as const)
+}
+
 /** 基础信息 baseInfoForm（value 为字典英文编码） */
 export const mockBaseInfo = {
   orderNo: "", // 新增为空，自动生成
@@ -23,7 +42,8 @@ export const mockBaseInfo = {
 export const mockSender = {
   senderName: "陈思远",
   senderPhone: "13800001001",
-  origin: ["330000", "330100", "330106"], // 浙江省/杭州市/西湖区（AreaCascader 行政区划编码）
+  origin: ["33", "3301", "330106"], // 浙江省/杭州市/西湖区（AreaCascader 行政区划编码）
+  sendAreaList:["浙江省","杭州市","西湖区"],
   senderAddress: "浙江省杭州市西湖区文三路488号",
 }
 
@@ -31,7 +51,8 @@ export const mockSender = {
 export const mockReceiver = {
   receiverName: "刘婉清",
   receiverPhone: "13800001002",
-  destination: ["310000", "310100", "310115"], // 上海市/市辖区/浦东新区
+  destination: ["31", "3101", "310115"], 
+  receiverAreaList: ["上海市", "市辖区", "浦东新区"],
   receiverAddress: "上海市浦东新区张杨路1881号",
 }
 

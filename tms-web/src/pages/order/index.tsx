@@ -105,7 +105,6 @@ export default function order() {
         title: "发货信息",
         colKey: "senderInfo",
         width: 200,
-        ellipsis: true,
         cell: ({ row }) => (
           <div>
             <div>联系人：{row.senderName || "-"}</div>
@@ -118,7 +117,6 @@ export default function order() {
         title: "收货信息",
         colKey: "receiverInfo",
         width: 200,
-        ellipsis: true,
         cell: ({ row }) => (
           <div>
             <div>联系人：{row.receiverName || "-"}</div>
@@ -131,6 +129,13 @@ export default function order() {
         title: "客户期望送达时间",
         colKey: "expectArriveTime",
         width: 170,
+        align: "center",
+        ellipsis: true,
+      },
+      {
+        title: "客户报价(元)",
+        colKey: "customerQuote",
+        width: 150,
         align: "center",
         ellipsis: true,
       },
@@ -174,7 +179,7 @@ export default function order() {
                   navigate(`/order/edit/?orderId=${row?.orderId}`)
                 },
               },
-              { key: "dispatch", label: "调度", onClick: () => {} },
+              { key: "takeOrder", label: "接单", onClick: () => {} },
               { key: "delete", label: "删除", theme: "danger", onClick: () => {} },
             ]}
           />

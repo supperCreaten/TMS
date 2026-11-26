@@ -45,7 +45,7 @@ export interface OrderRow {
   cargoType?: string
   totalQuantity?: number
   totalWeight?: number
-  totalFee?: number
+  customerQuote?: number
   orderSource?: string
   orderSourceText?: string
   remark?: string

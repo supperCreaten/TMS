@@ -7,11 +7,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.tms.common.utils.StringUtils;
-import com.tms.system.service.ISysLogininforService;
-import com.tms.system.service.ISysMenuService;
-import com.tms.system.service.ISysOperLogService;
-import com.tms.system.service.ISysRoleService;
-import com.tms.system.service.ISysUserService;
+import com.tms.system.system.service.ISysLogininforService;
+import com.tms.system.system.service.ISysMenuService;
+import com.tms.system.system.service.ISysOperLogService;
+import com.tms.system.system.service.ISysRoleService;
+import com.tms.system.system.service.ISysUserService;
 
 /**
  * 按模块标题加载业务旧数据，供操作日志字段对比

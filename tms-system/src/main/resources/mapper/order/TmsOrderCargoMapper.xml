@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tms.system.mapper.TmsOrderCargoMapper">
+<mapper namespace="com.tms.system.order.mapper.TmsOrderCargoMapper">
 
-	<resultMap type="com.tms.system.domain.vo.TmsOrderCargoVo" id="TmsOrderCargoVoResult">
+	<resultMap type="com.tms.system.order.domain.vo.TmsOrderCargoVo" id="TmsOrderCargoVoResult">
 		<id     property="cargoId"        column="cargo_id"        />
 		<result property="orderId"        column="order_id"        />
 		<result property="cargoName"      column="cargo_name"      />
@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		order by cargo_id asc
 	</select>
 
-	<insert id="insertCargo" parameterType="com.tms.system.domain.dto.TmsOrderCargoSaveReq" useGeneratedKeys="true" keyProperty="cargoId">
+	<insert id="insertCargo" parameterType="com.tms.system.order.domain.dto.TmsOrderCargoSaveReq" useGeneratedKeys="true" keyProperty="cargoId">
 		insert into tms_order_cargo(
 			order_id,
 			<if test="cargoName != null and cargoName != ''">cargo_name,</if>
@@ -77,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</foreach>
 	</insert>
 
-	<update id="updateCargo" parameterType="com.tms.system.domain.dto.TmsOrderCargoSaveReq">
+	<update id="updateCargo" parameterType="com.tms.system.order.domain.dto.TmsOrderCargoSaveReq">
 		update tms_order_cargo
 		<set>
 			<if test="cargoName != null and cargoName != ''">cargo_name = #{cargoName},</if>

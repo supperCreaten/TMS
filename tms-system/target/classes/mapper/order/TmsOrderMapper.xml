@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tms.system.mapper.TmsOrderMapper">
+<mapper namespace="com.tms.system.order.mapper.TmsOrderMapper">
 
-	<resultMap type="com.tms.system.domain.vo.TmsOrderVo" id="TmsOrderVoResult">
+	<resultMap type="com.tms.system.order.domain.vo.TmsOrderVo" id="TmsOrderVoResult">
 		<id     property="orderId"               column="order_id"                />
 		<result property="orderNo"               column="order_no"                />
 		<result property="waybillNo"             column="waybill_no"              />
@@ -34,6 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="destinationDistrictText" column="destination_district_text" />
 		<result property="receiverAddress"       column="receiver_address"        />
 		<result property="expectArriveTime"      column="expect_arrive_time"      />
+		<result property="customerQuote"         column="customer_quote"          />
 		<result property="totalQuantity"         column="total_quantity"          />
 		<result property="totalWeight"           column="total_weight"            />
 		<result property="totalVehicleCount"     column="total_vehicle_count"     />
@@ -42,9 +43,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="remark"                column="remark"                  />
 	</resultMap>
 
-	<resultMap type="com.tms.system.domain.vo.TmsOrderVo" id="TmsOrderDetailResult" extends="TmsOrderVoResult">
-		<collection property="cargoList" ofType="com.tms.system.domain.vo.TmsOrderCargoVo"
-			column="order_id" select="com.tms.system.mapper.TmsOrderCargoMapper.selectCargoListByOrderId" />
+	<resultMap type="com.tms.system.order.domain.vo.TmsOrderVo" id="TmsOrderDetailResult" extends="TmsOrderVoResult">
+		<collection property="cargoList" ofType="com.tms.system.order.domain.vo.TmsOrderCargoVo"
+			column="order_id" select="com.tms.system.order.mapper.TmsOrderCargoMapper.selectCargoListByOrderId" />
 	</resultMap>
 
 	<sql id="selectOrderVo">
@@ -55,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			o.receiver_name, o.receiver_phone,
 			o.destination_province, o.destination_city, o.destination_district,
 			o.destination_province_text, o.destination_city_text, o.destination_district_text, o.receiver_address,
-			o.expect_arrive_time, o.total_fee,
+			o.expect_arrive_time, o.customer_quote,
 			(select d.dict_label from sys_dict_data d
 				inner join sys_dict t on t.dict_id = d.dict_id and t.is_del = '0'
 				where t.dict_code = 'tms_order_source'
@@ -82,7 +83,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		left join tms_customer c on c.customer_id = o.customer_id and c.is_del = '0'
 	</sql>
 
-	<select id="selectOrderList" parameterType="com.tms.system.domain.dto.TmsOrderQuery" resultMap="TmsOrderVoResult">
+	<select id="selectOrderList" parameterType="com.tms.system.order.domain.dto.TmsOrderQuery" resultMap="TmsOrderVoResult">
 		<include refid="selectOrderVo"/>
 		where o.is_del = '0'
 		<if test="orderNo != null and orderNo != ''">
@@ -144,7 +145,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select max(order_no) from tms_order where order_no like concat(#{prefix}, '%')
 	</select>
 
-	<insert id="insertOrder" parameterType="com.tms.system.domain.dto.TmsOrderSaveReq" useGeneratedKeys="true" keyProperty="orderId">
+	<insert id="insertOrder" parameterType="com.tms.system.order.domain.dto.TmsOrderSaveReq" useGeneratedKeys="true" keyProperty="orderId">
 		insert into tms_order(
 			<if test="orderNo != null and orderNo != ''">order_no,</if>
 			<if test="waybillNo != null and waybillNo != ''">waybill_no,</if>
@@ -171,7 +172,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="destinationDistrictText != null and destinationDistrictText != ''">destination_district_text,</if>
 			<if test="receiverAddress != null and receiverAddress != ''">receiver_address,</if>
 			<if test="expectArriveTime != null">expect_arrive_time,</if>
-			total_fee,
+			customer_quote,
 			<if test="remark != null and remark != ''">remark,</if>
 			is_del, create_by, update_by, create_time, update_time
 		)values(
@@ -200,13 +201,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="destinationDistrictText != null and destinationDistrictText != ''">#{destinationDistrictText},</if>
 			<if test="receiverAddress != null and receiverAddress != ''">#{receiverAddress},</if>
 			<if test="expectArriveTime != null">#{expectArriveTime},</if>
-			0,
+			#{customerQuote},
 			<if test="remark != null and remark != ''">#{remark},</if>
 			'0', #{createBy}, #{updateBy}, sysdate(), sysdate()
 		)
 	</insert>
 
-	<update id="updateOrder" parameterType="com.tms.system.domain.dto.TmsOrderSaveReq">
+	<update id="updateOrder" parameterType="com.tms.system.order.domain.dto.TmsOrderSaveReq">
 		update tms_order
 		<set>
 			<if test="waybillNo != null">waybill_no = #{waybillNo},</if>
@@ -233,6 +234,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="destinationDistrictText != null">destination_district_text = #{destinationDistrictText},</if>
 			<if test="receiverAddress != null and receiverAddress != ''">receiver_address = #{receiverAddress},</if>
 			<if test="expectArriveTime != null">expect_arrive_time = #{expectArriveTime},</if>
+			<if test="customerQuote != null">customer_quote = #{customerQuote},</if>
 			<if test="remark != null">remark = #{remark},</if>
 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
 			update_time = sysdate()

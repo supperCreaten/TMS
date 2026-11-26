@@ -19,6 +19,7 @@ import "./index.css"
 import api from "@/api"
 import useDict from "@/hooks/use-dict"
 import { useSearchParams } from "react-router-dom"
+import { pickByFormConfig } from "@/utils/format/form"
 
 /** TDesign 12 栅格：xl 一行 3，md 一行 2，更小屏一行 1；地址始终整行 */
 const PARTY_COL: ColProps = { xl: 4, md: 6, sm: 12, xs: 12 }
@@ -245,6 +246,12 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
             className="w-full"
           />
         ),
+      },
+      {
+        name: "customerQuote",
+        label: "客户报价",
+        rules: [{ required: true, message: "请输入客户报价" }],
+        component: <InputText clearable placeholder="请输入" positive decimalPlaces={2} suffix="元" />,
       },
     ],
     [mode, customerList, orderSourceOptions, transportTypeOptions],
@@ -518,9 +525,9 @@ export default function OrderWizard(props: { mode: "create" | "edit" }) {
         dispatch({ loading: false })
       })
       const { cargoList = [], ...formValues } = data || {}
-      baseInfoForm.setFieldsValue(formValues)
-      senderForm.setFieldsValue(formValues)
-      receiverForm.setFieldsValue(formValues)
+      baseInfoForm.setFieldsValue(pickByFormConfig(formValues, basicFormConfig))
+      senderForm.setFieldsValue(pickByFormConfig(formValues, senderFormConfig))
+      receiverForm.setFieldsValue(pickByFormConfig(formValues, receiverFormConfig))
       tableRef.current?.setTableData(cargoList.map(toCargoRow))
       refreshCargoTotals()
       if (Array.isArray(formValues.originText)) {

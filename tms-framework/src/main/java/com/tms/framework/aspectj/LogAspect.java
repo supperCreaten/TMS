@@ -46,7 +46,7 @@ import com.tms.common.utils.log.OperChangeItem;
 import com.tms.common.utils.log.OperDiffUtils;
 import com.tms.framework.manager.AsyncManager;
 import com.tms.framework.manager.factory.AsyncFactory;
-import com.tms.system.domain.SysOperLog;
+import com.tms.system.system.domain.SysOperLog;
 
 /**
  * 操作日志记录处理（含字段级修改项）

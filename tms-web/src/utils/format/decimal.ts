@@ -3,7 +3,7 @@ import type { DecimalFormatOptions } from "@/interface"
 export type { DecimalFormatOptions } from "@/interface"
 
 /** 不允许输入 0 的字段，可按业务在此追加 */
-const DISALLOW_ZERO_FIELDS = new Set<string>(["quantity", "taxInclusiveUnitPrice"])
+const DISALLOW_ZERO_FIELDS = new Set<string>(["quantity", "taxInclusiveUnitPrice", "customerQuote"])
 
 /**
  * 禁止最终值为 0（含 0、0.0、0.00）。

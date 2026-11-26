@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.tms.common.constant.CacheConstants;
 import com.tms.common.constant.Constants;
-import com.tms.common.core.domain.entity.SysUser;
+import com.tms.system.system.domain.vo.SysUserVo;
 import com.tms.common.core.domain.model.LoginUser;
 import com.tms.common.core.redis.RedisCache;
 import com.tms.common.core.service.ITokenService;
@@ -25,7 +25,7 @@ import com.tms.common.utils.http.UserAgentUtils;
 import com.tms.common.utils.ip.AddressUtils;
 import com.tms.common.utils.ip.IpUtils;
 import com.tms.common.utils.uuid.IdUtils;
-import com.tms.system.service.ISysUserService;
+import com.tms.system.system.service.ISysUserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -181,8 +181,9 @@ public class TokenService implements ITokenService
         String ip = IpUtils.getIpAddr();
         loginUser.setIpaddr(ip);
         loginUser.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
-        loginUser.setBrowser(UserAgentUtils.getBrowser(userAgent));
-        loginUser.setOs(UserAgentUtils.getOperatingSystem(userAgent));
+        // 不用 YAUAA：首次加载规则要数秒到十几秒，会顶满前端 5 秒超时
+        loginUser.setBrowser(UserAgentUtils.getBrowserFast(userAgent));
+        loginUser.setOs(UserAgentUtils.getOperatingSystemFast(userAgent));
     }
 
     /**
@@ -326,7 +327,7 @@ public class TokenService implements ITokenService
         {
             throw new ServiceException("Refresh token expired", 401);
         }
-        SysUser user = userService.selectUserByUserName(account);
+        SysUserVo user = userService.selectUserByUserName(account);
         if (user == null)
         {
             throw new ServiceException("Refresh token expired", 401);

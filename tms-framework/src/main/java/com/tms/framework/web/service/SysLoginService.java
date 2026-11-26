@@ -24,7 +24,7 @@ import com.tms.common.utils.ip.IpUtils;
 import com.tms.framework.manager.AsyncManager;
 import com.tms.framework.manager.factory.AsyncFactory;
 import com.tms.framework.security.context.AuthenticationContextHolder;
-import com.tms.system.service.ISysUserService;
+import com.tms.system.system.service.ISysUserService;
 
 /**
  * 登录校验方法

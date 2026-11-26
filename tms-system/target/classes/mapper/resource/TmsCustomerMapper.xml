@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tms.system.mapper.TmsCustomerMapper">
+<mapper namespace="com.tms.system.resource.mapper.TmsCustomerMapper">
 
-	<resultMap type="com.tms.system.domain.vo.TmsCustomerVo" id="TmsCustomerResult">
+	<resultMap type="com.tms.system.resource.domain.vo.TmsCustomerVo" id="TmsCustomerResult">
 		<id     property="customerId"          column="customer_id"           />
 		<result property="customerNo"          column="customer_no"           />
 		<result property="customerName"        column="customer_name"         />
@@ -49,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from tms_customer
 	</sql>
 
-	<select id="selectCustomerList" parameterType="com.tms.system.domain.dto.TmsCustomerQuery" resultMap="TmsCustomerResult">
+	<select id="selectCustomerList" parameterType="com.tms.system.resource.domain.dto.TmsCustomerQuery" resultMap="TmsCustomerResult">
 		<include refid="selectCustomerVo"/>
 		where is_del = '0'
 		<if test="customerLevel != null and customerLevel != ''">
@@ -92,7 +92,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select max(customer_no) from tms_customer where customer_no like concat(#{prefix}, '%')
 	</select>
 
-	<insert id="insertCustomer" parameterType="com.tms.system.domain.dto.TmsCustomerSaveReq" useGeneratedKeys="true" keyProperty="customerId">
+	<insert id="insertCustomer" parameterType="com.tms.system.resource.domain.dto.TmsCustomerSaveReq" useGeneratedKeys="true" keyProperty="customerId">
 		insert into tms_customer(
 			customer_no, customer_name,
 			<if test="shortName != null and shortName != ''">short_name,</if>
@@ -152,7 +152,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	</insert>
 
-	<update id="updateCustomer" parameterType="com.tms.system.domain.dto.TmsCustomerSaveReq">
+	<update id="updateCustomer" parameterType="com.tms.system.resource.domain.dto.TmsCustomerSaveReq">
 		update tms_customer
 		<set>
 			<if test="customerName != null and customerName != ''">customer_name = #{customerName},</if>

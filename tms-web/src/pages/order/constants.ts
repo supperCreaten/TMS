@@ -11,7 +11,8 @@ export const ORDER_DICT = {
 /** 订单状态 Tag 主题（与后端 OrderStatus 枚举 code 一致） */
 export const ORDER_STATUS_TAG_THEME = {
   pending_accept: "warning", // 待接单
-  pending_dispatch: "primary", // 待调度
+  accepted: "primary", // 已接单
+  pending_depart: "primary", // 待发车
   in_transit: "primary", // 运输中
   signed: "success", // 已签收
   completed: "success", // 已完成
